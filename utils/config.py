@@ -7,7 +7,7 @@ class DeviceConfig:
         self.adb_android_studio = config_yaml['adb']['android_studio']
 
 
-class Config():
+class Config:
     _instance = None
 
     @staticmethod
@@ -17,7 +17,7 @@ class Config():
         return Config._instance
 
     def __init__(self):
-        with open("../config.yaml", "r") as stream:
+        with open("config.yaml", "r") as stream:
             try:
                 self._loaded_yaml = yaml.safe_load(stream)
             except yaml.YAMLError as exc:

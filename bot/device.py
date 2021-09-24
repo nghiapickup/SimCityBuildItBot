@@ -49,14 +49,5 @@ class Device:
     def abd_sendevents(self, event_tuples):
         template = f'sendevent {self.touch_device }' + ' {} {} {}'
         cmd = str.join(';', [template.format(e_type, e_code, e_vaulue) for (e_type, e_code, e_vaulue) in event_tuples])
+        print(cmd)
         return self.adb_shell(cmd)
-
-
-if __name__ == '__main__':
-    new_device = Device()
-    # click on bottom right
-    events = [(1, 330, 1), (3, 58, 1), (3, 53, 80), (3, 54, 1833), (0, 2, 0), (0, 0, 0), (1, 330, 0), (0, 2, 0), (0, 0, 0)]
-    print(new_device.abd_sendevents(events))
-
-    # tap(touchdev, 100, 100, serial)
-

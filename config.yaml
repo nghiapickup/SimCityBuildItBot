@@ -7,3 +7,7 @@ device:
 
 resources:
   screen_shot_dir: /nghianh3/SimCityBuildItBot/resources/screen_shot/
+  object_image_dir: /nghianh3/SimCityBuildItBot/resources/object/
+
+logging:
+  log_dir: /nghianh3/SimCityBuildItBot/log/

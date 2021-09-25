@@ -1,19 +1,21 @@
 import os, subprocess
+from service.service import AbsService
 from service.config import Config
-from utils.display import Screen
+from object.display import Screen
 
 # Device type
 GENYMOTION = 1
 ANDROID_STUDIO = 2
 
 
-class Device:
+class Device(AbsService):
     def __init__(self, serial=None, type=GENYMOTION):
         """
         Init connection to a device. By default the device is loaded from genymotion emulator
         :param serial: device serial, it None, the first in adb devices list will be chosen
         :param type: adb to to execute
         """
+        super().__init__()
         self.config = Config.get_instance().device_config
         self.adbDir = {
             GENYMOTION: self.config.adb_genymotion,

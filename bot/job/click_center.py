@@ -1,5 +1,5 @@
 from bot.job.common import AbsJob
-from bot.hub import *
+from service.hub import *
 
 
 class ClickCenter(AbsJob):

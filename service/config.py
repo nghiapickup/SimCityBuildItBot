@@ -1,5 +1,5 @@
+import os
 import yaml
-
 
 class DeviceConfig:
     def __init__(self, config_yaml):
@@ -12,6 +12,12 @@ class DeviceConfig:
 class ResourceConfig:
     def __init__(self, config_yaml):
         self.screen_shot_dir = config_yaml['screen_shot_dir']
+        self.object_image_dir = config_yaml['object_image_dir']
+
+
+class LogConfig:
+    def __init__(self, config_yaml):
+        self.log_dir = config_yaml['log_dir']
 
 
 class Config:
@@ -24,7 +30,8 @@ class Config:
         return Config._instance
 
     def __init__(self):
-        with open("config.yaml", "r") as stream:
+        yaml_dir = '{os_path}/../config.yaml'.format(os_path=os.path.dirname(os.path.abspath(__file__)))
+        with open(yaml_dir, "r") as stream:
             try:
                 self._loaded_yaml = yaml.safe_load(stream)
             except yaml.YAMLError as e:
@@ -33,6 +40,7 @@ class Config:
         try:
             self.device_config = DeviceConfig(self._loaded_yaml['device'])
             self.resource_config = ResourceConfig(self._loaded_yaml['resources'])
+            self.log_config = LogConfig(self._loaded_yaml['logging'])
         except Exception as e:
             raise IOError(f'Cannot load config value! {e}')
 

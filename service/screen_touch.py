@@ -1,4 +1,5 @@
 import time
+from service.service import AbsService
 
 # Event list
 TOUCH_DOWN = 1
@@ -30,9 +31,12 @@ class EV_SYN:
     SYN_REPORT = 0
 
 
-class Touch:
+class Touch(AbsService):
     def __init__(self, device):
+        super().__init__()
+
         self.device = device
+
         self.action_map = {
             TOUCH_DOWN: self._touch_down,
             TOUCH_UP: self._touch_up,
@@ -45,8 +49,9 @@ class Touch:
             ACTION_CLICK: self._click_on
         }
 
-    def execute(self, action_code, **kwargs):
+    def execute(self, action_code, is_sleep=None, **kwargs):
         self.action_map[action_code](**kwargs)
+        if is_sleep is not None: time.sleep(is_sleep)
 
     def _touch_down(self):
         events = [(EV_KEY.type, EV_KEY.BTN_TOUCH, 1)]
@@ -74,24 +79,29 @@ class Touch:
         events = [(EV_SYN.type, EV_SYN.SYN_MT_REPORT, 0)]
         self.device.abd_sendevents(events)
 
-    def _wipe(self, from_pixel, to_pixel, n_step=5):
-        x_step = (to_pixel.x - from_pixel.x)/n_step
-        y_step = (to_pixel.y - from_pixel.y)/n_step
+    def _wipe(self, pixel_path, n_step=10):
+        for p in range(0, len(pixel_path) - 1):
+            from_pixel = pixel_path[p]
+            to_pixel = pixel_path[p+1]
 
-        self.execute(TOUCH_DOWN)
-        self.execute(ABS_PRESSURE)
+            x_step = (to_pixel.x - from_pixel.x)/n_step
+            y_step = (to_pixel.y - from_pixel.y)/n_step
 
-        for i in range (0, n_step):
-            self.execute(ABS_AXIS, x=from_pixel.x + x_step*i, y=from_pixel.y +y_step*i)
-            self.execute(SENT_SYN)
+            self.execute(TOUCH_DOWN)
+            self.execute(ABS_PRESSURE)
+
+            for i in range (0, n_step):
+                self.execute(ABS_AXIS, x=from_pixel.x + x_step*i, y=from_pixel.y +y_step*i)
+                self.execute(SENT_SYN)
 
         self.execute(TOUCH_UP)
         self.execute(SENT_SYN)
 
-    def _click_on(self, pixel):
+    def _click_on(self, pixel, hold=-1):
         self.execute(TOUCH_DOWN)
         self.execute(ABS_PRESSURE)
         self.execute(ABS_AXIS, x=pixel.x, y=pixel.y)
         self.execute(SENT_SYN)
+        if hold > 0: time.sleep(hold)
         self.execute(TOUCH_UP)
         self.execute(SENT_SYN)

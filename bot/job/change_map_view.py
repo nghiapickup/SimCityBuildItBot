@@ -1,6 +1,5 @@
-from utils.display import Pixel
 from bot.job.common import AbsJob
-from bot.hub import *
+from service.hub import *
 
 
 class ChangeMapView(AbsJob):

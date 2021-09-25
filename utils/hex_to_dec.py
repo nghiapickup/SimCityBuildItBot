@@ -1,3 +1,5 @@
+# convert getevent from get_event.input to hex code to decimal code
+
 with open('./utils/get_event.input', 'r') as f:
     lines = f.readlines()
     lines = [line.strip().split(' ') for line in lines]

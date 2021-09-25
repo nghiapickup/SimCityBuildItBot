@@ -2,3 +2,8 @@ device:
   adb:
     genymotion: /opt/genymotion/tools/adb
     android_studio: /home/ubuntu/Android/Sdk/platform-tools/adb
+  screen_x: 1080
+  screen_y: 1920
+
+resources:
+  screen_shot_dir: /nghianh3/SimCityBuildItBot/resources/screen_shot/

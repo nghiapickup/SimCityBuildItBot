@@ -1,18 +1,15 @@
-from utils.config import Config
 from bot.device import Device
-from bot.action.screen_touch import Touch
-from bot.action.screen_touch import *
-import sys
+from bot.hub import JobHub, ServiceHub
+from service.screen_capture import SCREEN_SHOW
+
 if __name__ == '__main__':
     new_device = Device()
+    service_hub = ServiceHub(new_device)
+    job_hub = JobHub(new_device, service_hub)
 
-    touch = Touch(new_device)
-    touch.execute(TOUCH_DOWN)
-    touch.execute(ABS_AXIS, x=65, y=1838)
-    touch.execute(SENT_SYN)
-    touch.execute(TOUCH_UP)
-    touch.execute(SENT_SYN)
+    job_hub.change_map_view.execute()
+    job_hub.sleep(1)
+    job_hub.click_storage.execute()
+    job_hub.click_center.execute()
 
-    # new_device.abd_sendevents([(1, 330, 1), (3, 58, 1), (3, 53, 71), (3, 54, 1740), (0, 2, 0), (0, 0, 0)])
-    # new_device.abd_sendevents([(3, 53, 1048), (3, 54, 92), (0, 2, 0), (0, 0, 0), (1, 330, 0), (0, 2, 0), (0, 0, 0)])
-    # click_event.execute(571,811)
+    service_hub.screen_capture.execute(SCREEN_SHOW, resize=True)

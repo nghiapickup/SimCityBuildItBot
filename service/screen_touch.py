@@ -49,9 +49,9 @@ class Touch(AbsService):
             ACTION_CLICK: self._click_on
         }
 
-    def execute(self, action_code, is_sleep=None, **kwargs):
+    def execute(self, action_code, sleep_in=None, **kwargs):
         self.action_map[action_code](**kwargs)
-        if is_sleep is not None: time.sleep(is_sleep)
+        if sleep_in is not None: time.sleep(sleep_in)
 
     def _touch_down(self):
         events = [(EV_KEY.type, EV_KEY.BTN_TOUCH, 1)]

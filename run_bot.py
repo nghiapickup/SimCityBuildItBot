@@ -1,5 +1,5 @@
-from bot.bot import Bot
+from bot.click_opinion_bot import ClickOpinionBot
 
 if __name__ == '__main__':
-    new_bot = Bot('Capital city')
+    new_bot = ClickOpinionBot()
     new_bot.run()

@@ -1,31 +1,30 @@
-from object import items, buttons
-from service import screen_touch
-from service.hub import JobHub, ServiceHub
-from object.city import City
+import time
+
+from service.hub import ServiceHub
 from service.log import LogHandle
+from bot.job.hub import JobHub
 
 
 class Bot:
     def __init__(self, name):
+        """
+        A bot performs a single or combination of tasks, independent to each others,
+        and a game can have multiple bots running at the same time.
+        It is easier to have single action bot like this,
+        .i.e, click opinion bot, run factory bot, trade bot,
+        then we don't worry about the logic of combination of many task
+        (which is the first, which should perform after another, ...),
+        and try to test new bot when the others are running.
+
+        At each time, only one bot can handle the game (device and action),
+        a bot must complete it's task and release the device for other bots.
+        :param name:
+        """
         self.logger = LogHandle('bot').get_logger()
         self.name = name
         self.service_hub = ServiceHub.get_instance()
+        print(id(self.service_hub))
         self.job_hub = JobHub(self.service_hub)
 
     def run(self):
-        capitol = City("Capitol City")
-
-        # Change View
-        # self.job_hub.change_map_view.execute()
-        # self.job_hub.click_center.execute()
-
-        metal = items.Metal()
-        bnt_empty = buttons.BntEmpty()
-
-        empty_loc = bnt_empty.find_one(show=True)
-        # while empty_loc is not None:
-        #     print(f'Has empty slot at {empty_loc}!')
-        #     metal_loc = metal.find_one()
-        #     path = [metal_loc, empty_loc]
-        #     self.service_hub.screen_touch.execute(screen_touch.ACTION_WIPE, is_sleep=1, pixel_path = path, n_step=8)
-        #     empty_loc = bnt_empty.find_one()
+        pass

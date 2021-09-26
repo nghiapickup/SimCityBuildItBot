@@ -34,11 +34,11 @@ class LogHandle:
         self.get_error_logger()
 
     def _set_new_handler(self):
-        self.my_handler = TimedRotatingFileHandler(self.log_file, when='midnight')
+        self.my_handler = TimedRotatingFileHandler(self.log_file, when='h', backupCount=1)
         self.my_handler.setFormatter(LogHandle.log_formatter)
         self.my_handler.setLevel(logging.INFO)
 
-        self.my_error_handler = TimedRotatingFileHandler(self.log_error_file, when='midnight')
+        self.my_error_handler = TimedRotatingFileHandler(self.log_error_file, when='h', backupCount=1)
         self.my_error_handler.setFormatter(LogHandle.log_formatter)
         self.my_error_handler.setLevel(logging.INFO)
 

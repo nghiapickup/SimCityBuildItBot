@@ -40,6 +40,11 @@ class Pixel:
     def from_cv_point(cls, cv_point):
         return cls(cv_point[0], cv_point[1], convert_to_xy_device=True)
 
+    def get_cv_point(self):
+        x = self.y
+        y = self.x
+        return self.screen_x - x, y
+
     def diff_range(self, other, n_step):
         return Pixel((other.x - self.x)/n_step, (other.y - self.y)/n_step)
 

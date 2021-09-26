@@ -21,46 +21,44 @@ class ClickOpinion(AbsJob):
 
     def execute(self):
         opinion = OpinionBlue()
-        found_opinion = opinion.find_one()
-        while found_opinion is not None:
-            opinion_loc, template_id, score = found_opinion
-            self.logger.info(f'Found opinion {OPINION[template_id]}:{score}!')
-            print(f'Found opinion {OPINION[template_id]}:{score}!')
-            self._handle_ad(opinion_loc) if template_id == 1 else self._handle_normal(opinion_loc)
-            found_opinion = opinion.find_one()
+        opinion.find_and_click(loop=True, callback=self._handle_opinion)
 
         simoleon = OpinionSimoleon()
-        found_simoleon = simoleon.find_one()
-        while found_simoleon is not None:
-            opinion_loc, _, score = found_simoleon
-            self.logger.info(f'Found opinion simoleon:{score}!')
-            print(f'Found opinion simoleon:{score}!')
-            self._handle_simoleon(opinion_loc)
-            found_simoleon = simoleon.find_one()
+        simoleon.find_and_click(loop=True, callback=self._handle_simoleon)
 
-    def _handle_normal(self, opinion_loc):
-        self.logger.info("Click normal opinion!")
-        self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=opinion_loc, sleep_in=1)
-        self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=opinion_loc)
+    def _handle_opinion(self, found_opinion):
+        opinion_loc, template_id, score = found_opinion
+        self.logger.info(f'Found opinion {OPINION[template_id]}:{score}!')
 
-    def _handle_ad(self, opinion_loc):
-        self.logger.info("Watch ad opinion!")
+        if template_id == 1:
+            self._handle_ad()
+        else:
+            self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=opinion_loc) # close though bubble
 
+    def _handle_ad(self):
+        self.logger.info(f'{self.__class__} Watch ad opinion!')
+        is_watched = False
         ad_bnt = BntAdWatch()
-        ad_bnt.find_and_click(5)
-        time.sleep(30) # watch ad
+        if ad_bnt.find_and_click(5) is not None:
+            time.sleep(30) # watch ad
+            close_bnt = BntAdClose()
+            if close_bnt.find_and_click(5) is not None:
+                # find reward button, if not, raise error
+                reward_bnt = BntAdReward()
+                reward_loc, _ = reward_bnt.find_and_click(5)
+                self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=reward_loc, sleep_in=5) # click again to close
+                is_watched = True
+        if not is_watched:
+            mes = f'{self.__class__} cannot watch opinion ad!'
+            raise ModuleNotFoundError(mes)
+        return True
 
-        close_bnt = BntAdClose()
-        close_bnt.find_and_click(5)
-
-        # find reward button, if not, raise error
-        reward_bnt = BntAdReward()
-        reward_loc, _ = reward_bnt.find_and_click(5)
-        self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=reward_loc, sleep_in=5) # click to close
-
-    def _handle_simoleon(self, opinion_loc):
-        self.logger.info("Close simoleon opinion!")
-        self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=opinion_loc, sleep_in=1)
+    def _handle_simoleon(self, found_simoleon):
+        opinion_loc, _, score = found_simoleon
+        self.logger.info(f'Found opinion simoleon:{score}!')
 
         no_bnt = BntNoThanks()
-        no_bnt.find_and_click()
+        if no_bnt.find_and_click() is None:
+            mes = f'{self.__class__} cannot BntNoThanks to close simoleon opinion!'
+            raise ModuleNotFoundError(mes)
+        return True

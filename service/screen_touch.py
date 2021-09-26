@@ -79,7 +79,16 @@ class Touch(AbsService):
         events = [(EV_SYN.type, EV_SYN.SYN_MT_REPORT, 0)]
         self.device.abd_sendevents(events)
 
-    def _wipe(self, pixel_path, n_step=10):
+    def _wipe(self, pixel_path, n_step=10, hold=0):
+        """
+        Wipe follow a list of pixels.
+        The wipe will click on the first pixel and release at the final path.
+
+        :param pixel_path: list of pixel to follow
+        :param n_step: step between 2 moving pixel
+        :param hold: sleep hold second(s) after touch down at the first pixel
+        :return:
+        """
         for p in range(0, len(pixel_path) - 1):
             from_pixel = pixel_path[p]
             to_pixel = pixel_path[p+1]
@@ -89,6 +98,7 @@ class Touch(AbsService):
 
             self.execute(TOUCH_DOWN)
             self.execute(ABS_PRESSURE)
+            time.sleep(hold)
 
             for i in range (0, n_step):
                 self.execute(ABS_AXIS, x=from_pixel.x + x_step*i, y=from_pixel.y +y_step*i)
@@ -97,11 +107,11 @@ class Touch(AbsService):
         self.execute(TOUCH_UP)
         self.execute(SENT_SYN)
 
-    def _click_on(self, pixel, hold=-1):
+    def _click_on(self, pixel, hold=0):
         self.execute(TOUCH_DOWN)
         self.execute(ABS_PRESSURE)
         self.execute(ABS_AXIS, x=pixel.x, y=pixel.y)
         self.execute(SENT_SYN)
-        if hold > 0: time.sleep(hold)
+        time.sleep(hold)
         self.execute(TOUCH_UP)
         self.execute(SENT_SYN)

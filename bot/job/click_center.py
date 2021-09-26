@@ -8,5 +8,9 @@ class ClickCenter(AbsJob):
         self.touch = service_hub.screen_touch
         self.screen = device.screen
 
-    def execute(self):
-        self.touch.execute(ACTION_CLICK, pixel = self.screen.center)
+    def execute(self, shift_pixel=None):
+        click_loc = self.screen.center
+        if shift_pixel is not None:
+            click_loc = click_loc + shift_pixel
+
+        self.touch.execute(ACTION_CLICK, pixel = click_loc)

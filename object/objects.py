@@ -24,6 +24,10 @@ BNT_AD_WATCH = 103
 BNT_AD_CLOSE = 104
 BNT_AD_REWARD = 105
 BNT_NO_THANKS = 106
+BNT_TRADE_PLUS = 107
+BNT_TRADE_DONE = 108
+BNT_CLOSE_BLUE = 109
+BNT_TRADE_PUT = 110
 
 # People opinion
 OPINION_BLUE = 1000
@@ -45,6 +49,10 @@ ObjectId = {
     'bnt_ad_close': BNT_AD_CLOSE,
     'bnt_ad_reward': BNT_AD_REWARD,
     'bnt_no_thanks': BNT_NO_THANKS,
+    'bnt_trade_plus': BNT_TRADE_PLUS,
+    'bnt_trade_done': BNT_TRADE_DONE,
+    'bnt_close_blue': BNT_CLOSE_BLUE,
+    'bnt_trade_put': BNT_TRADE_PUT,
 
     'opinion_blue': OPINION_BLUE,
     'opinion_simoleon': OPINION_SIMOLEON
@@ -71,9 +79,9 @@ class BasicObject:
         self.n_sample = 2
         self.restricted_box = None  # Object is only exist in this box
 
-    def find_one(self, show=False):
+    def look(self, all=False, show=False):
         """
-        Take a screen shot and find one object
+        Take a screen shot and find one object with the highest matching score
         :return: Pixel object contain matched object location, return None if not.
         """
         return self.service.screen_capture.execute(
@@ -81,34 +89,52 @@ class BasicObject:
             imread=self.imread,
             metric=self.matching_metric,
             threshold=self.threshold,
-            n_sample=self.n_sample,
             obj=self,
+            return_all=all,
             show=show)
 
-    def find_wait_and_raise(self, wait_time=5):
+    def find_and_wait(self, wait_time=5):
         """
-        find and re-find again if object is not exist after wait_time
-        and raise exception if cannot re-find failed.
+        find and re-find again if object is not exist after wait_time second(s)
         :param wait_time: to between find and re-find
-        :return:
+        :return: find_one return
         """
-        found_obj = self.find_one()
+        found_obj = self.look()
         if found_obj is None:
             time.sleep(wait_time)
-            found_obj = self.find_one()
+            found_obj = self.look()
         if found_obj is None:
             mes = f'{self.name} can not be found!'
-            raise ModuleNotFoundError(mes)
+            self.logger.info(mes)
+            return None
+
         return found_obj
 
-    def find_and_click(self, wait_time=5):
+    def find_and_click(self, wait_time=5, loop=False, callback=None):
         """
         find_wait_and_raise then click on object
         :param wait_time: time between find and re-find, look at find_wait_and_raise
-        :return:
+        :param loop: Find and click, execute callback loop until all object is gone
+        :param callback: execute callback after click if not None
+        :return: find_one return
         """
-        found_obj = self.find_wait_and_raise(wait_time)
-        found_loc, _, _ = found_obj
-        self.service.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=found_loc, sleep_in=1)
+        found_obj = self.find_and_wait(wait_time)
+        if found_obj is not None:
+            found_loc, _, _ = found_obj
+            self.service.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=found_loc, sleep_in=1)
+            if callback is not None:
+                res = callback(found_obj)
+                if not res: return object
+
+        if loop:
+            loop_obj = self.find_and_wait(wait_time)
+            while loop_obj is not None:
+                found_loc, _, _ = loop_obj
+                self.service.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=found_loc, sleep_in=1)
+                if callback is not None:
+                    res = callback(loop_obj)
+                    if not res: break
+
+                loop_obj = self.find_and_wait(wait_time)
 
         return found_obj

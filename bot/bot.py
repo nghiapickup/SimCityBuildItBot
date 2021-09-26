@@ -23,7 +23,6 @@ class Bot:
         self.logger = LogHandle('bot').get_logger()
         self.name = name
         self.service_hub = ServiceHub.get_instance()
-        print(id(self.service_hub))
         self.job_hub = JobHub(self.service_hub)
 
     def run(self):

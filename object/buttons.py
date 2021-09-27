@@ -53,15 +53,22 @@ class BntAdWatch(BasicObject):
 class BntAdClose(BasicObject):
     def __init__(self):
         super().__init__('bnt_ad_close')
-        self.n_sample = 1
+        self.n_sample = 2
         self.threshold = 0.9
 
 
 class BntAdReward(BasicObject):
     def __init__(self):
         super().__init__('bnt_ad_reward')
+        self.n_sample = 2
+        self.threshold = 0.8
+
+
+class BntAdRewardCollected(BasicObject):
+    def __init__(self):
+        super().__init__('bnt_ad_reward_collected')
         self.n_sample = 1
-        self.threshold = 0.9
+        self.threshold = 0.8
 
 
 class BntNoThanks(BasicObject):

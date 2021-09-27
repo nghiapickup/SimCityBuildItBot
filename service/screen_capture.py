@@ -36,7 +36,7 @@ class Capture(AbsService):
         image = cv2.imdecode(np.fromstring(image_bytes, np.uint8), imread)
 
         if save_file is not None: cv2.imwrite(save_file, image)
-        if resize: image = cv2.resize(image, (image.shape[0]/2, image.shape[1]/2))  # Resize image
+        if resize: image = cv2.resize(image, (image.shape[0] / 2, image.shape[1] / 2))  # Resize image
         if show:
             cv2.imshow("", image)
             cv2.waitKey(0)
@@ -47,7 +47,7 @@ class Capture(AbsService):
         (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(matching_result)
 
         if metric in [cv2.TM_SQDIFF, cv2.TM_SQDIFF_NORMED]:
-            select_value = 1-minVal
+            select_value = 1 - minVal
             select_loc = minLoc
         else:
             select_value = maxVal
@@ -59,9 +59,9 @@ class Capture(AbsService):
             return None
 
         # If the brightest one is not in the restricted box, return None, it may have mismatch matching
-        return_pixel = Pixel(select_loc[0],
-                    select_loc[1],
-                    convert_to_xy_device=True)
+        return_pixel = Pixel(select_loc[0] + template.shape[1] / 2,
+                             select_loc[1] + template.shape[0] / 2,
+                             convert_to_xy_device=True)
         if not return_pixel.is_in(restricted_box):
             self.logger.info(f'_try_match_template return None! selected Pixel{return_pixel} '
                              f'is not in restricted_box {restricted_box}.')
@@ -84,7 +84,7 @@ class Capture(AbsService):
             image = cv2.imdecode(np.fromstring(image_bytes, np.uint8), imread)
 
         all_select_locs = []
-        return_pixel, template_id, select_template, select_value, matching_result= None, None, None, 0, None
+        return_pixel, template_id, select_template, select_value, matching_result = None, None, None, 0, None
         for i in range(1, obj.n_sample + 1):
             template = cv2.imread(obj.image_dir + f'{obj.name}{i}.png', imread)
             return_match = self._try_match_template(image, template, metric, threshold, obj.restricted_box)
@@ -102,9 +102,10 @@ class Capture(AbsService):
                     # Get all locs are in restricted area
                     locs = np.where(match_score >= threshold)
                     for point in zip(*locs[::-1]):
-                        converted_pixel = Pixel.from_cv_point(point)
+                        converted_pixel = Pixel.from_cv_point(point) + Pixel(template.shape[1], template.shape[0])
                         if converted_pixel.is_in(obj.restricted_box):
-                            all_select_locs.append([converted_pixel, match_score[point[1], point[0]], template])
+                            all_select_locs.append([converted_pixel ,
+                                                    match_score[point[1], point[0]], template])
 
         if select_value == 0:
             self.logger.info('_match_item_template return None, none of templates match!')
@@ -119,8 +120,8 @@ class Capture(AbsService):
                 t = select_locs[2]
                 cv2.rectangle(image, (px, py), (px + t.shape[1], py + t.shape[0]), (255, 255, 0), 3)
                 front_scale = 2
-                cv2.putText(image, f'{obj.name}{score}:{round(select_locs[3],2)}',
-                            (px, py + t.shape[0] + front_scale*10 + 2),
+                cv2.putText(image, f'{obj.name}{score}:{round(select_locs[3], 2)}',
+                            (px, py + t.shape[0] + front_scale * 10 + 2),
                             cv2.FONT_HERSHEY_PLAIN, front_scale, (255, 255, 0), 2, cv2.LINE_AA)
 
             # show the output image

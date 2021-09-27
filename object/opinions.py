@@ -49,4 +49,4 @@ class OpinionSimoleon(BasicObject):
     def __init__(self):
         super().__init__("opinion_simoleon")
         self.n_sample = 2
-        self.threshold = 0.9
+        self.threshold = 0.8

@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from service.config import Config
 from logging.handlers import TimedRotatingFileHandler
+from multiprocessing_logging import install_mp_handler
 
 
 class LogHandle:
@@ -27,6 +28,7 @@ class LogHandle:
         self.log_file = self.log_folder + self.log_name
         self.log_error_file = self.log_error_folder + self.log_error_name
         self._set_new_handler()
+        install_mp_handler()
 
         self.logger = None
         self.error_logger = None

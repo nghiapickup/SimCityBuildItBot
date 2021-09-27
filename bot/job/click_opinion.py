@@ -1,7 +1,7 @@
 import time
 
 from bot.job.common import AbsJob
-from object.buttons import BntAdWatch, BntAdClose, BntAdReward, BntNoThanks
+from object.buttons import BntAdWatch, BntAdClose, BntAdReward, BntNoThanks, BntAdRewardCollected
 from service import screen_touch
 from object.opinions import OpinionBlue, OpinionSimoleon, OPINION
 
@@ -21,10 +21,11 @@ class ClickOpinion(AbsJob):
 
     def execute(self):
         opinion = OpinionBlue()
-        opinion.find_and_click(loop=True, callback=self._handle_opinion)
+        opinion.find_and_click(loop=True, sleep_time=1, callback=self._handle_opinion)
 
+        # Simoleon need to wait longer to close the option
         simoleon = OpinionSimoleon()
-        simoleon.find_and_click(loop=True, callback=self._handle_simoleon)
+        simoleon.find_and_click(loop=True, sleep_time=2, callback=self._handle_simoleon)
 
     def _handle_opinion(self, found_opinion):
         opinion_loc, template_id, score = found_opinion
@@ -34,22 +35,28 @@ class ClickOpinion(AbsJob):
             self._handle_ad()
         else:
             self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=opinion_loc) # close though bubble
+        return True
 
     def _handle_ad(self):
         self.logger.info(f'{self.__class__} Watch ad opinion!')
         is_watched = False
         ad_bnt = BntAdWatch()
-        if ad_bnt.find_and_click(5) is not None:
-            time.sleep(30) # watch ad
+        if ad_bnt.find_and_click(wait_time=5) is not None:
+            time.sleep(25) # watch ad
             close_bnt = BntAdClose()
-            if close_bnt.find_and_click(5) is not None:
-                # find reward button, if not, raise error
+            # Close and watch reward box appear!
+            if close_bnt.find_and_click(wait_time=5, sleep_time=3) is not None:
+                # find reward button
                 reward_bnt = BntAdReward()
-                reward_loc, _ = reward_bnt.find_and_click(5)
-                self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=reward_loc, sleep_in=5) # click again to close
-                is_watched = True
+                # Long sleep after collect reward -> change to opened box
+                found_reward = reward_bnt.find_and_click(wait_time=5, sleep_time=7)
+                collected_reward_bnt = BntAdRewardCollected()
+                found_collected_reward = collected_reward_bnt.find_and_click(5)
+                if found_reward is not None and found_collected_reward is not None:
+                    is_watched = True
+
         if not is_watched:
-            mes = f'{self.__class__} cannot watch opinion ad!'
+            mes = f'{self.__class__}: cannot finish watching opinion ad!'
             raise ModuleNotFoundError(mes)
         return True
 

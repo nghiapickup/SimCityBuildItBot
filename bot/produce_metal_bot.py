@@ -2,7 +2,7 @@ import time
 from bot.bot import Bot
 from object.buttons import BntCollect, BntEmpty, BntCloseBlue
 from object.display import Pixel
-from object.items import Metal
+from object.items import Metal, Wood
 from service import screen_touch
 
 
@@ -26,7 +26,8 @@ class ProduceMetalBot(Bot):
             self.job_hub.click_center.execute()
 
             # Collect all item first
-            bnt_collect.find_and_click(wait_time=2, loop=True)
+            # find collect button (no re-find if is not) and click all (no wait after click)
+            bnt_collect.find_and_click(wait_time=0, sleep_time=0, loop=True)
 
             # drag metal to empty slot
             produce_metal = False
@@ -42,16 +43,18 @@ class ProduceMetalBot(Bot):
                 self.touch_service.execute(
                     screen_touch.ACTION_WIPE,
                     pixel_path=[metal_loc, empty_loc],
-                    n_step=10,
-                    hold=1
+                    n_step=7,
+                    hold=0
                 )
                 found_empty = bnt_empty.look()
                 produce_metal = True
 
             if produce_metal:
                 time.sleep(60)
-                found_collect = bnt_collect.find_and_click(wait_time=5, loop=True)
+                # find collect button (wait 5s if is not) and click all (no wait after click)
+                found_collect = bnt_collect.find_and_click(wait_time=5, sleep_time=0, loop=True)
                 if found_collect is not None:
                     self.touch_service.execute(screen_touch.ACTION_CLICK, pixel=Pixel(60, 550))
-                    self.job_hub.collect_trade_depot.execute()
-                    bnt_close.find_and_click()
+                    time.sleep(2)
+                    self.job_hub.collect_trade_depot.execute(trade_items=[metal, Wood()])
+                    bnt_close.find_and_click(wait_time=0, sleep_time=2) # wait 2s after close trade pot

@@ -19,7 +19,7 @@ class BntTradePlus(BasicObject):
     def __init__(self):
         super().__init__('bnt_trade_plus')
         self.n_sample = 1
-        self.threshold = 0.98
+        self.threshold = 0.9
 
 
 class BntTradeDone(BasicObject):

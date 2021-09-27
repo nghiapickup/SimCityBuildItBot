@@ -112,7 +112,9 @@ class BasicObject:
 
         return found_obj
 
-    def find_and_click(self, wait_time=0, sleep_time=1, loop=False, skip_loop_wait=True, callback=None):
+    def find_and_click(self, wait_time=0, sleep_time=1,
+                       loop=False, skip_loop_wait=True,
+                       callback=None, **callback_args):
         """
         find_wait_and_raise then click on object
 
@@ -129,7 +131,7 @@ class BasicObject:
             found_loc, _, _ = found_obj
             self.service.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=found_loc, sleep_in=sleep_time)
             if callback is not None:
-                res = callback(found_obj)
+                res = callback(found_obj, **callback_args)
                 if not res: return found_obj
 
             # only loop when found the first one
@@ -140,7 +142,7 @@ class BasicObject:
                     found_loc, _, _ = loop_obj
                     self.service.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=found_loc, sleep_in=sleep_time)
                     if callback is not None:
-                        res = callback(loop_obj)
+                        res = callback(loop_obj, **callback_args)
                         if not res: break
 
                     loop_obj = self.find_and_wait(wait_time)

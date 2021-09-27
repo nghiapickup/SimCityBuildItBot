@@ -1,3 +1,5 @@
+import math
+
 from service.config import Config
 
 """
@@ -21,6 +23,9 @@ class Pixel:
     def __add__(self, other):
         return Pixel(self.x + other.x, self.y + other.y)
 
+    def distance(self, other):
+        return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
+
     def __le__(self, other):
         return (self.x <= other.x) and (self.y <= other.y)
 
@@ -41,9 +46,7 @@ class Pixel:
         return cls(cv_point[0], cv_point[1], convert_to_xy_device=True)
 
     def get_cv_point(self):
-        x = self.y
-        y = self.x
-        return self.screen_x - x, y
+        return self.y, self.screen_x - self.x
 
     def diff_range(self, other, n_step):
         return Pixel((other.x - self.x)/n_step, (other.y - self.y)/n_step)

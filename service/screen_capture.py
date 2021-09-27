@@ -58,7 +58,7 @@ class Capture(AbsService):
                              f'({select_value}<{threshold}).')
             return None
 
-        # If the brightest one is not in the restricted box, return None, it may have mismatch matching
+        # Check the brightest one is not in the restricted box, if not, it may have matching wrong object
         return_pixel = Pixel(select_loc[0] + template.shape[1] / 2,
                              select_loc[1] + template.shape[0] / 2,
                              convert_to_xy_device=True)
@@ -102,10 +102,18 @@ class Capture(AbsService):
                     # Get all locs are in restricted area
                     locs = np.where(match_score >= threshold)
                     for point in zip(*locs[::-1]):
-                        converted_pixel = Pixel.from_cv_point(point) + Pixel(template.shape[1], template.shape[0])
+                        converted_pixel = Pixel(point[0] + template.shape[1]/2,
+                                                point[1] + template.shape[0]/2,
+                                                convert_to_xy_device=True)
                         if converted_pixel.is_in(obj.restricted_box):
-                            all_select_locs.append([converted_pixel ,
-                                                    match_score[point[1], point[0]], template])
+                            # check whether new point is found !
+                            min_distance = 100
+                            if len(all_select_locs) > 0:
+                                min_distance = min(map(lambda p: converted_pixel.distance(p[0]), all_select_locs))
+                            if min_distance > 50: # size of minimum box is ~50x50
+                                all_select_locs.append([converted_pixel ,
+                                                        match_score[point[1], point[0]],
+                                                        template])
 
         if select_value == 0:
             self.logger.info('_match_item_template return None, none of templates match!')
@@ -113,14 +121,19 @@ class Capture(AbsService):
 
         if show:
             self.logger.info(f'_match_item_template found {len(all_select_locs)} matches! Max_value={select_value}')
+            print(f'_match_item_template found {len(all_select_locs)} matches! Max_value={select_value}')
             # Draw all rectangle around the matched points.
             for select_locs in all_select_locs:
                 px, py = select_locs[0].get_cv_point()
                 score = select_locs[1]
                 t = select_locs[2]
+
+                # return to origin brightest point, since (px, py) is moved to center before
+                px = round(px - t.shape[1]/2)
+                py = round(py - t.shape[0]/2)
                 cv2.rectangle(image, (px, py), (px + t.shape[1], py + t.shape[0]), (255, 255, 0), 3)
                 front_scale = 2
-                cv2.putText(image, f'{obj.name}{score}:{round(select_locs[3], 2)}',
+                cv2.putText(image, f'{obj.name}{score}:{round(score, 2)}',
                             (px, py + t.shape[0] + front_scale * 10 + 2),
                             cv2.FONT_HERSHEY_PLAIN, front_scale, (255, 255, 0), 2, cv2.LINE_AA)
 

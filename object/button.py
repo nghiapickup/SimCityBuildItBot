@@ -13,7 +13,8 @@ BNT_TRADE_DONE = 108
 BNT_CLOSE_BLUE = 109
 BNT_TRADE_PUT = 110
 BNT_AD_REWARD_COLLECTED = 111
-BNT_RIGHT = 112
+BNT_RIGHT = 112,
+BNT_YES = 113
 
 BNT_TYPE = {
     'bnt_empty': BNT_EMPTY,
@@ -29,6 +30,7 @@ BNT_TYPE = {
     'bnt_trade_put': BNT_TRADE_PUT,
     'bnt_ad_reward_collected': BNT_AD_REWARD_COLLECTED,
     'bnt_right': BNT_RIGHT,
+    'bnt_yes': BNT_YES
 }
 
 
@@ -92,14 +94,14 @@ class BntAdReward(BasicObject):
     def __init__(self):
         super().__init__('bnt_ad_reward')
         self.n_sample = 2
-        self.threshold = 0.8
+        self.threshold = 0.75
 
 
 class BntAdRewardCollected(BasicObject):
     def __init__(self):
         super().__init__('bnt_ad_reward_collected')
         self.n_sample = 1
-        self.threshold = 0.8
+        self.threshold = 0.75
 
 
 class BntNoThanks(BasicObject):
@@ -123,6 +125,13 @@ class BntRight(BasicObject):
         self.threshold = 0.7
 
 
+class BntYes(BasicObject):
+    def __init__(self):
+        super().__init__('bnt_yes')
+        self.n_sample = 1
+        self.threshold = 0.9
+
+
 class BntFactory(BasicObject):
     bnt_map = {
         BNT_EMPTY: BntEmpty,
@@ -137,9 +146,10 @@ class BntFactory(BasicObject):
         BNT_CLOSE_BLUE: BntCloseBlue,
         BNT_TRADE_PUT: BntTradePut,
         BNT_AD_REWARD_COLLECTED: BntAdRewardCollected,
-        BNT_RIGHT: BntRight
+        BNT_RIGHT: BntRight,
+        BNT_YES: BntYes
     }
 
     @staticmethod
-    def get(bnt_id):
+    def make(bnt_id):
         return BntFactory.bnt_map[bnt_id]()

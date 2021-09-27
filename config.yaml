@@ -14,4 +14,4 @@ logging:
 
 building:
   factory_count: 6
-  factory_produce_list: ['metal', 'metal', 'wood', 'wood', 'seed', 'plastic']
+  factory_produce_list: ['metal', 'wood', 'wood', 'seed', 'seed', 'plastic']

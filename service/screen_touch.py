@@ -40,7 +40,7 @@ class Touch(AbsService):
         super().__init__()
 
         self.device = device
-        self.screen = device.screen
+        self.screen = self.device.screen
 
         self.action_map = {
             TOUCH_DOWN: self._touch_down,
@@ -58,7 +58,9 @@ class Touch(AbsService):
 
     def execute(self, action_code, sleep_in=None, **kwargs):
         self.action_map[action_code](**kwargs)
-        if sleep_in is not None: time.sleep(sleep_in)
+        if sleep_in is not None:
+            self.logger.info(f'{self.__class__}: sleep_in={sleep_in} seconds')
+            time.sleep(sleep_in)
 
     def _touch_down(self):
         events = [(EV_KEY.type, EV_KEY.BTN_TOUCH, 1)]
@@ -96,6 +98,7 @@ class Touch(AbsService):
         :param hold: sleep hold second(s) after touch down at the first pixel
         :return:
         """
+        self.logger.info(f'{self.__class__}:_wipe')
         for p in range(0, len(pixel_path) - 1):
             from_pixel = pixel_path[p]
             to_pixel = pixel_path[p+1]
@@ -107,7 +110,7 @@ class Touch(AbsService):
             self.execute(ABS_PRESSURE)
             time.sleep(hold)
 
-            for i in range (0, n_step):
+            for i in range (0, n_step+1):
                 self.execute(ABS_AXIS, x=from_pixel.x + x_step*i, y=from_pixel.y +y_step*i)
                 self.execute(SENT_SYN)
 
@@ -115,6 +118,7 @@ class Touch(AbsService):
         self.execute(SENT_SYN)
 
     def _click_on(self, pixel, hold=0):
+        self.logger.info(f'{self.__class__}:_click_on Pixel({pixel})')
         self.execute(TOUCH_DOWN)
         self.execute(ABS_PRESSURE)
         self.execute(ABS_AXIS, x=pixel.x, y=pixel.y)
@@ -124,6 +128,7 @@ class Touch(AbsService):
         self.execute(SENT_SYN)
 
     def _click_center(self, shift_pixel=None, hold=0):
+        self.logger.info(f'{self.__class__}:_click_center')
         click_loc = self.screen.center
         if shift_pixel is not None:
             click_loc = click_loc + shift_pixel
@@ -131,6 +136,7 @@ class Touch(AbsService):
         self._click_on(pixel=click_loc, hold=hold)
 
     def _wipe_center(self, wipe_length=0.25, hold=1):
+        self.logger.info(f'{self.__class__}:_wipe_center')
         start = self.screen.center
-        end = start + Pixel(0, self.screen.y_size * wipe_length)
+        end = start + Pixel(0, -self.screen.y_size * wipe_length)
         self._wipe(pixel_path=[start, end], n_step=3, hold=hold)

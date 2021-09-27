@@ -1,12 +1,12 @@
-from bot.job.common import AbsJob
+from job.job import AbsJob
 from service.hub import *
 
 
 class ChangeMapView(AbsJob):
-    def __init__(self, device, service_hub):
-        super().__init__('Change Map View', device, service_hub)
-        self.touch = service_hub.screen_touch
-        self.screen = device.screen
+    def __init__(self):
+        super().__init__('Change Map View')
+        self.touch = self.service_hub.screen_touch
+        self.screen = self.device.screen
 
     def execute(self):
         self._change_view()

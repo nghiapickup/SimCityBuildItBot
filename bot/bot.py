@@ -1,8 +1,6 @@
-import time
-
 from service.hub import ServiceHub
-from service.log import LogHandle
-from bot.job.hub import JobHub
+from utils.log import LogHandle
+from job.hub import JobHub
 
 
 class Bot:
@@ -20,11 +18,11 @@ class Bot:
         a bot must complete it's task and release the device for other bots.
         :param name:
         """
-        log = LogHandle('bot')
-        self.logger = log.get_logger()
+        self.logger = LogHandle('bot').logger
         self.name = name
+
         self.service_hub = ServiceHub.get_instance()
-        self.job_hub = JobHub(self.service_hub)
+        self.job_hub = JobHub.get_instance()
 
     def run(self):
         pass

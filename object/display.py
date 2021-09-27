@@ -1,6 +1,6 @@
 import math
 
-from service.config import Config
+from utils.config import Config
 
 """
 Pixel and Screen follow top-left xy-coordinator with non-rotated screen

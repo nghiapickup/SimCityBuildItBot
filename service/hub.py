@@ -16,4 +16,5 @@ class ServiceHub:
         self.device = Device()
         self.screen_touch = Touch(self.device)
         self.screen_capture = Capture(self.device)
+
         ServiceHub._instance = self

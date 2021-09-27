@@ -74,5 +74,5 @@ class ItemFactory:
     }
 
     @staticmethod
-    def get(item_id):
+    def make(item_id):
         return ItemFactory.item_map[item_id]()

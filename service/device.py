@@ -1,6 +1,6 @@
 import os, subprocess
 from service.service import AbsService
-from service.config import Config
+from utils.config import Config
 from object.display import Screen
 
 # Device type
@@ -58,7 +58,7 @@ class Device(AbsService):
     def adb_screen_cap(self, save_dir=None):
         """
         Capture screen shot and save to save_dir, return bitmap stdout if save_dir is not provided
-        :param save_dir: dir to save, if not provided, capture_output is True
+        :param save_dir: dir to save, if not provided, check_output is used
         :return:
         """
         args = [self.adbDir, '-s', self.serial, 'exec-out', 'screencap -p']
@@ -67,5 +67,5 @@ class Device(AbsService):
             with open(save_dir, 'w') as f:
                 return subprocess.run(args, stdout=f)
 
-        return subprocess.run(args, capture_output=True)
+        return subprocess.check_output(args)
 

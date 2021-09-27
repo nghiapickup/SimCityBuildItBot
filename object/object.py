@@ -1,20 +1,20 @@
 import time
 import cv2
 
-from service.config import Config
+from utils.config import Config
 from service.hub import ServiceHub
 from service import screen_capture, screen_touch
-from service.log import LogHandle
+from utils.log import LogHandle
 
 
 class BasicObject:
     _image_dir = Config.get_instance().resource_config.object_image_dir
 
     def __init__(self, name):
-        log = LogHandle('objects')
-        self.logger = log.get_logger()
+        self.logger = LogHandle('objects').logger
         self.image_dir = BasicObject._image_dir + f'{name}/'
         self.name = name
+
         self.in_storage = 0
         self.max_quantity = 0
 
@@ -28,7 +28,7 @@ class BasicObject:
         self.n_sample = 2
         self.restricted_box = None  # Object is only exist in this box
 
-    def look(self, all=False, show=False):
+    def look(self, get_all=False, show=False):
         """
         Take a screen shot and find one object with the highest matching score
         :return: Pixel object contain matched object location, return None if not.
@@ -39,7 +39,7 @@ class BasicObject:
             metric=self.matching_metric,
             threshold=self.threshold,
             obj=self,
-            return_all=all,
+            return_all=get_all,
             show=show)
 
     def find_and_wait(self, wait_time=5):

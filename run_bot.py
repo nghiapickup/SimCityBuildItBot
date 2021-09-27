@@ -1,10 +1,10 @@
 import sys
 from bot.click_opinion_bot import ClickOpinionBot
-from bot.produce_metal_bot import ProduceMetalBot
+from bot.produce_factory_bot import ProduceFactoryBot
 
 bot_map = {
     'click_opinion': ClickOpinionBot,
-    'produce_metal': ProduceMetalBot
+    'produce_factory': ProduceFactoryBot
 }
 
 if __name__ == '__main__':

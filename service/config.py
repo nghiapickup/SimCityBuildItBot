@@ -20,6 +20,12 @@ class LogConfig:
         self.log_dir = config_yaml['log_dir']
 
 
+class BuildingConfig:
+    def __init__(self, config_yaml):
+        self.factory_count = config_yaml['factory_count']
+        self.factory_produce_list = config_yaml['factory_produce_list']
+
+
 class Config:
     _instance = None
 
@@ -41,6 +47,7 @@ class Config:
             self.device_config = DeviceConfig(self._loaded_yaml['device'])
             self.resource_config = ResourceConfig(self._loaded_yaml['resources'])
             self.log_config = LogConfig(self._loaded_yaml['logging'])
+            self.building_config = BuildingConfig(self._loaded_yaml['building'])
         except Exception as e:
             raise IOError(f'Cannot load config value! {e}')
 

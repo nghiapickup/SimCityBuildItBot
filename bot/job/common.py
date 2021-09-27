@@ -6,7 +6,8 @@ class AbsJob:
         return self.name
 
     def __init__(self, name, device, service_hub):
-        self.logger = LogHandle('bot_job').get_logger()
+        log = LogHandle('bot_job')
+        self.logger = log.get_logger()
         self.name = name
         self.device = device
         self.service_hub = service_hub

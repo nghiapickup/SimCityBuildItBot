@@ -11,3 +11,7 @@ resources:
 
 logging:
   log_dir: /nghianh3/SimCityBuildItBot/log/
+
+building:
+  factory_count: 6
+  factory_produce_list: ['metal', 'metal', 'wood', 'wood', 'seed', 'plastic']

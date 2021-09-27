@@ -1,4 +1,23 @@
-from object.objects import BasicObject
+from object.object import BasicObject
+
+# Item type id
+METAL = 1
+WOOD = 2
+PLASTIC = 3
+SEED = 4
+MINERAL = 5
+CHEMICAL = 6
+TEXTILE = 7
+
+ITEM_STR = {
+    'metal': METAL,
+    'wood': WOOD,
+    'plastic': PLASTIC,
+    'seed': SEED,
+    'mineral': MINERAL,
+    'chemical': CHEMICAL,
+    'textile': TEXTILE
+}
 
 
 class Metal(BasicObject):
@@ -41,3 +60,19 @@ class Chemical(BasicObject):
     def __init__(self):
         super().__init__("chemical")
         self.n_sample = 2
+
+
+class ItemFactory:
+    item_map = {
+        METAL: Metal,
+        WOOD: Wood,
+        PLASTIC: Plastic,
+        SEED: Seed,
+        MINERAL: Mineral,
+        CHEMICAL: Chemical,
+        TEXTILE: Textile
+    }
+
+    @staticmethod
+    def get(item_id):
+        return ItemFactory.item_map[item_id]()

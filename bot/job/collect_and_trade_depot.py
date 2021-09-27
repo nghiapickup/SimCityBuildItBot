@@ -1,8 +1,6 @@
 from bot.job.common import AbsJob
-from object.buttons import BntTradeDone, BntTradeNew, BntCloseBlue, BntTradePlus, BntTradePut
-from object.items import Metal
+from object.button import BntTradeDone, BntTradeNew, BntCloseBlue, BntTradePlus, BntTradePut
 from service import screen_touch
-from service.hub import *
 
 
 class CollectAndTradeDepot(AbsJob):
@@ -26,6 +24,11 @@ class CollectAndTradeDepot(AbsJob):
         # wait 2s after click trade new
         bnt_trade_new.find_and_click(wait_time=0, sleep_time=2, loop=True,
                                      callback=self._trade_new, trade_list=trade_items)
+        # wipe right and find trade box again
+        self.touch.execute(screen_touch.ACTION_WIPE_CENTER)
+        bnt_trade_new.find_and_click(wait_time=0, sleep_time=2, loop=True,
+                                     callback=self._trade_new, trade_list=trade_items)
+
         self.logger.info(f'{self.__class__}: All trade is done!')
 
     def _trade_new(self, _, trade_list):

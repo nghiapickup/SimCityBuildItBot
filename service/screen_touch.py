@@ -1,4 +1,6 @@
 import time
+
+from object.display import Pixel
 from service.service import AbsService
 
 # Event list
@@ -11,6 +13,8 @@ ABS_PRESSURE = 6
 
 ACTION_WIPE = 7
 ACTION_CLICK=8
+ACTION_CLICK_CENTER=9
+ACTION_WIPE_CENTER=10
 
 
 class EV_KEY:
@@ -36,6 +40,7 @@ class Touch(AbsService):
         super().__init__()
 
         self.device = device
+        self.screen = device.screen
 
         self.action_map = {
             TOUCH_DOWN: self._touch_down,
@@ -46,7 +51,9 @@ class Touch(AbsService):
             ABS_PRESSURE: self._set_pressure,
 
             ACTION_WIPE: self._wipe,
-            ACTION_CLICK: self._click_on
+            ACTION_CLICK: self._click_on,
+            ACTION_CLICK_CENTER: self._click_center,
+            ACTION_WIPE_CENTER: self._wipe_center
         }
 
     def execute(self, action_code, sleep_in=None, **kwargs):
@@ -115,3 +122,15 @@ class Touch(AbsService):
         time.sleep(hold)
         self.execute(TOUCH_UP)
         self.execute(SENT_SYN)
+
+    def _click_center(self, shift_pixel=None, hold=0):
+        click_loc = self.screen.center
+        if shift_pixel is not None:
+            click_loc = click_loc + shift_pixel
+
+        self._click_on(pixel=click_loc, hold=hold)
+
+    def _wipe_center(self, wipe_length=0.25, hold=1):
+        start = self.screen.center
+        end = start + Pixel(0, self.screen.y_size * wipe_length)
+        self._wipe(pixel_path=[start, end], n_step=3, hold=hold)

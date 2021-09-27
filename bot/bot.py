@@ -20,7 +20,8 @@ class Bot:
         a bot must complete it's task and release the device for other bots.
         :param name:
         """
-        self.logger = LogHandle('bot').get_logger()
+        log = LogHandle('bot')
+        self.logger = log.get_logger()
         self.name = name
         self.service_hub = ServiceHub.get_instance()
         self.job_hub = JobHub(self.service_hub)

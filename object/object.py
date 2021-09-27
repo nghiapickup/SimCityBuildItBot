@@ -1,5 +1,4 @@
 import time
-
 import cv2
 
 from service.config import Config
@@ -7,69 +6,17 @@ from service.hub import ServiceHub
 from service import screen_capture, screen_touch
 from service.log import LogHandle
 
-# Item
-METAL = 1
-WOOD = 2
-PLASTIC = 3
-TEXTILE = 4
-SEED = 5
-MINERAL = 6
-CHEMICAL = 7
-
-# Button
-BNT_EMPTY = 100
-BNT_TRADE_NEW = 101
-BNT_COLLECT = 102
-BNT_AD_WATCH = 103
-BNT_AD_CLOSE = 104
-BNT_AD_REWARD = 105
-BNT_NO_THANKS = 106
-BNT_TRADE_PLUS = 107
-BNT_TRADE_DONE = 108
-BNT_CLOSE_BLUE = 109
-BNT_TRADE_PUT = 110
-BNT_AD_REWARD_COLLECTED = 111
-
-# People opinion
-OPINION_BLUE = 1000
-OPINION_SIMOLEON = 1001
-
-ObjectId = {
-    'metal': METAL,
-    'wood': WOOD,
-    'plastic': PLASTIC,
-    'textile': TEXTILE,
-    'seed': SEED,
-    'mineral': MINERAL,
-    'chemical': CHEMICAL,
-
-    'bnt_empty': BNT_EMPTY,
-    'bnt_trade_new': BNT_TRADE_NEW,
-    'bnt_collect': BNT_COLLECT,
-    'bnt_ad_watch': BNT_AD_WATCH,
-    'bnt_ad_close': BNT_AD_CLOSE,
-    'bnt_ad_reward': BNT_AD_REWARD,
-    'bnt_no_thanks': BNT_NO_THANKS,
-    'bnt_trade_plus': BNT_TRADE_PLUS,
-    'bnt_trade_done': BNT_TRADE_DONE,
-    'bnt_close_blue': BNT_CLOSE_BLUE,
-    'bnt_trade_put': BNT_TRADE_PUT,
-    'bnt_ad_reward_collected': BNT_AD_REWARD_COLLECTED,
-
-    'opinion_blue': OPINION_BLUE,
-    'opinion_simoleon': OPINION_SIMOLEON
-}
-
 
 class BasicObject:
     _image_dir = Config.get_instance().resource_config.object_image_dir
 
     def __init__(self, name):
-        self.logger = LogHandle('objects').get_logger()
-        self._id = ObjectId[str.lower(name)]
+        log = LogHandle('objects')
+        self.logger = log.get_logger()
         self.image_dir = BasicObject._image_dir + f'{name}/'
         self.name = name
         self.in_storage = 0
+        self.max_quantity = 0
 
         self.service = ServiceHub.get_instance()
 

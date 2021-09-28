@@ -15,6 +15,7 @@ ACTION_WIPE = 7
 ACTION_CLICK=8
 ACTION_CLICK_CENTER=9
 ACTION_WIPE_CENTER=10
+ACTION_WIPE_TO_CENTER=11
 
 
 class EV_KEY:
@@ -53,7 +54,8 @@ class Touch(AbsService):
             ACTION_WIPE: self._wipe,
             ACTION_CLICK: self._click_on,
             ACTION_CLICK_CENTER: self._click_center,
-            ACTION_WIPE_CENTER: self._wipe_center
+            ACTION_WIPE_CENTER: self._wipe_center,
+            ACTION_WIPE_TO_CENTER: self._wipe_to_center
         }
 
     def execute(self, action_code, sleep_in=None, **kwargs):
@@ -118,7 +120,7 @@ class Touch(AbsService):
         self.execute(SENT_SYN)
 
     def _click_on(self, pixel, hold=0):
-        self.logger.info(f'{self.__class__}:_click_on Pixel({pixel})')
+        self.logger.info(f'{self.__class__}:_click_on Pixel{pixel}')
         self.execute(TOUCH_DOWN)
         self.execute(ABS_PRESSURE)
         self.execute(ABS_AXIS, x=pixel.x, y=pixel.y)
@@ -135,8 +137,14 @@ class Touch(AbsService):
 
         self._click_on(pixel=click_loc, hold=hold)
 
-    def _wipe_center(self, wipe_length=0.25, hold=1):
+    def _wipe_center(self, n_step=3, wipe_length=0.25, hold=1):
         self.logger.info(f'{self.__class__}:_wipe_center')
         start = self.screen.center
         end = start + Pixel(0, -self.screen.y_size * wipe_length)
-        self._wipe(pixel_path=[start, end], n_step=3, hold=hold)
+        self._wipe(pixel_path=[start, end], n_step=n_step, hold=hold)
+
+    def _wipe_to_center(self, from_pixel, n_step=3, hold=1):
+        self.logger.info(f'{self.__class__}:_wipe_to_center')
+        end = self.screen.center
+        start = from_pixel
+        self._wipe(pixel_path=[start, end], n_step=n_step, hold=hold)

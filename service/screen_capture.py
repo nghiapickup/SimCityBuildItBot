@@ -37,6 +37,7 @@ class Capture(AbsService):
             cv2.imshow("", image)
             cv2.waitKey(0)
             cv2.destroyWindow("")
+        return True
 
     def _try_match_template(self, image, template, metric, threshold, restricted_box):
         matching_result = cv2.matchTemplate(image, template, metric)
@@ -137,4 +138,4 @@ class Capture(AbsService):
         if return_all:
             return all_select_locs
         else:
-            return return_pixel, template_id, select_value
+            return [(return_pixel, template_id, select_value)]

@@ -38,10 +38,12 @@ class ClickOpinion(AbsJob):
         is_collected = False
         # find reward button
         reward_bnt = BntFactory.make(button.BNT_AD_REWARD)
-        if reward_bnt.find_and_click(wait_time=5, sleep_time=5) is not None:
+        reward_action = reward_bnt.find_and_click(wait_time=5, sleep_time=5)
+        if reward_action.action_return is not None:
             # Long sleep after collect reward -> change to opened box
             collected_reward_bnt = BntFactory.make(button.BNT_AD_REWARD_COLLECTED)
-            if collected_reward_bnt.find_and_click(wait_time=5, sleep_time=1) is not None:
+            collected_reward_action = collected_reward_bnt.find_and_click(wait_time=5, sleep_time=1)
+            if collected_reward_action.action_return is not None:
                 is_collected = True
 
         if not is_collected:
@@ -51,7 +53,8 @@ class ClickOpinion(AbsJob):
 
     def _handle_simoleon(self):
         no_bnt = BntFactory.make(button.BNT_NO_THANKS)
-        if no_bnt.find_and_click(wait_time=3) is None:
+        no_action = no_bnt.find_and_click(wait_time=3)
+        if no_action.action_return is None:
             mes = f'{self.__class__}_handle_simoleon: cannot close simoleon opinion!'
             raise ModuleNotFoundError(mes)
         return True

@@ -20,46 +20,59 @@ ITEM_STR = {
 }
 
 
-class Metal(BasicObject):
+class BasicItem(BasicObject):
+    def __init__(self, name):
+        super().__init__(name)
+        self.produce_time = None
+
+
+class Metal(BasicItem):
     def __init__(self):
         super().__init__("metal")
         self.n_sample = 2
+        self.produce_time = 1*60
 
 
-class Wood(BasicObject):
+class Wood(BasicItem):
     def __init__(self):
         super().__init__("wood")
         self.n_sample = 2
+        self.produce_time = 3*60
 
 
-class Plastic(BasicObject):
+class Plastic(BasicItem):
     def __init__(self):
         super().__init__("plastic")
         self.n_sample = 2
+        self.produce_time = 9*60
 
 
-class Textile(BasicObject):
-    def __init__(self):
-        super().__init__("textile")
-        self.n_sample = 2
-
-
-class Seed(BasicObject):
+class Seed(BasicItem):
     def __init__(self):
         super().__init__("seed")
         self.n_sample = 2
+        self.produce_time = 20*60
 
 
-class Mineral(BasicObject):
+class Mineral(BasicItem):
     def __init__(self):
         super().__init__("mineral")
         self.n_sample = 2
+        self.produce_time = 30*60
 
 
-class Chemical(BasicObject):
+class Chemical(BasicItem):
     def __init__(self):
         super().__init__("chemical")
         self.n_sample = 2
+        self.produce_time = 2*60*60
+
+
+class Textile(BasicItem):
+    def __init__(self):
+        super().__init__("textile")
+        self.n_sample = 2
+        self.produce_time = 3*60*60
 
 
 class ItemFactory:
@@ -74,5 +87,9 @@ class ItemFactory:
     }
 
     @staticmethod
-    def make(item_id):
+    def from_id(item_id):
         return ItemFactory.item_map[item_id]()
+
+    @staticmethod
+    def from_str(item_name):
+        return ItemFactory.item_map[ITEM_STR[item_name]]()

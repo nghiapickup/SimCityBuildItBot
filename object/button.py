@@ -15,6 +15,7 @@ BNT_TRADE_PUT = 110
 BNT_AD_REWARD_COLLECTED = 111
 BNT_RIGHT = 112,
 BNT_YES = 113
+BNT_BUY_TRADE_SLOT = 114
 
 BNT_TYPE = {
     'bnt_empty': BNT_EMPTY,
@@ -30,7 +31,8 @@ BNT_TYPE = {
     'bnt_trade_put': BNT_TRADE_PUT,
     'bnt_ad_reward_collected': BNT_AD_REWARD_COLLECTED,
     'bnt_right': BNT_RIGHT,
-    'bnt_yes': BNT_YES
+    'bnt_yes': BNT_YES,
+    'bnt_buy_trade_slot': BNT_BUY_TRADE_SLOT
 }
 
 
@@ -132,6 +134,13 @@ class BntYes(BasicObject):
         self.threshold = 0.9
 
 
+class BntBuyTradeSlot(BasicObject):
+    def __init__(self):
+        super().__init__('bnt_buy_trade_slot')
+        self.n_sample = 1
+        self.threshold = 0.9
+
+
 class BntFactory(BasicObject):
     bnt_map = {
         BNT_EMPTY: BntEmpty,
@@ -147,7 +156,8 @@ class BntFactory(BasicObject):
         BNT_TRADE_PUT: BntTradePut,
         BNT_AD_REWARD_COLLECTED: BntAdRewardCollected,
         BNT_RIGHT: BntRight,
-        BNT_YES: BntYes
+        BNT_YES: BntYes,
+        BNT_BUY_TRADE_SLOT: BntBuyTradeSlot
     }
 
     @staticmethod

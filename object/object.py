@@ -9,6 +9,7 @@ from utils.log import LogHandle
 
 class ObjectActionReturn:
     def __init__(self, action_return=None, callback_return=None):
+        self.ok = action_return is not None
         self.action_return = action_return
         self.callback_return = callback_return
 
@@ -21,9 +22,7 @@ class BasicObject:
         self.image_dir = BasicObject._image_dir + f'{name}/'
         self.name = name
 
-        self.in_storage = 0
-        self.max_quantity = 0
-
+        self.location = None
         self.service_hub = ServiceHub.get_instance()
 
         # Config for template matching
@@ -34,7 +33,7 @@ class BasicObject:
         self.n_sample = 2
         self.restricted_box = None  # Object is only exist in this box
 
-    def look(self, get_all=False, show=False):
+    def look(self, get_all=False, save_loc=False, show=False):
         """
         Take a screen shot and find one object with the highest matching score
         :return: Pixel object contain matched object location, return action None if not.
@@ -48,32 +47,41 @@ class BasicObject:
             return_all=get_all,
             show=show)
 
+        if save_loc and look_return: self.location = look_return[0][0]
         return ObjectActionReturn(action_return=look_return, callback_return=None)
 
-    def find_and_wait(self, wait_time=5):
+    def look_and_wait(self, wait_time=2, try_time=1,
+                      get_all=False):
         """
         find and re-find again if object is not exist after wait_time second(s)
+        :param try_time: number of retry
         :param wait_time: to wait between find and re-find, skip re-find if wait_time=0
         :return: find_one return
         """
-        found_action = self.look()
-        if found_action.action_return is None and wait_time > 0:
-            time.sleep(wait_time)
-            found_action = self.look()
-        if found_action.action_return is None:
-            mes = f'{self.__class__}: {self.name} can not be found!'
-            self.logger.info(mes)
+        assert try_time >= 0, f'{self.__class__}: try_time >= 0 but {try_time} found!'
+
+        look_action = self.look(get_all=get_all)
+        while not look_action.ok and try_time:
+            try_time -= 1
+            if wait_time > 0:
+                time.sleep(wait_time)
+            look_action = self.look(get_all=get_all)
+
+        if not look_action.ok:
+            self.logger.info(f'{self.__class__}:look_and_wait: {self.name} cannot be found')
             return ObjectActionReturn()
 
-        return ObjectActionReturn(action_return=found_action.action_return, callback_return=None)
+        self.logger.info(f'{self.__class__}: {self.name} is found')
+        return ObjectActionReturn(action_return=look_action.action_return, callback_return=None)
 
-    def find_and_click(self, wait_time=0, sleep_time=1,
+    def find_and_click(self, wait_time=1, try_time=1, sleep_time=1,
                        loop=False, skip_loop_wait=True,
                        callback=None, **callback_args):
         """
         find_wait_and_raise then click on object
 
         :param wait_time: time between find and re-find, look at find_wait_and_raise
+        :param try_time: number of retry
         :param sleep_time: sleep second after click
         :param loop: Find and click, execute callback loop until all object is gone
         :param skip_loop_wait: skip wait_time when loop
@@ -81,9 +89,9 @@ class BasicObject:
         callback must return True for loop to continue and False to stop the loop
         :return: find_one return
         """
-        find_action = self.find_and_wait(wait_time)
+        find_action = self.look_and_wait(wait_time, try_time)
         callback_return = False
-        if find_action.action_return is not None:
+        if find_action.ok:
             found_loc, _, _ = find_action.action_return[0]
             self.service_hub.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=found_loc, sleep_in=sleep_time)
             if callback is not None:
@@ -94,14 +102,43 @@ class BasicObject:
             # only loop when found the first one
             if loop:
                 if skip_loop_wait: wait_time = 0
-                loop_action = self.find_and_wait(wait_time)
-                while loop_action.action_return is not None:
+                loop_action = self.look_and_wait(wait_time)
+                while loop_action.ok:
                     found_loc, _, _ = loop_action.action_return[0]
-                    self.service_hub.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=found_loc, sleep_in=sleep_time)
+                    self.service_hub.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=found_loc,
+                                                          sleep_in=sleep_time)
                     if callback is not None:
                         callback_return = callback(loop_action.action_return, **callback_args)
                         if not callback_return: break
 
-                    loop_action = self.find_and_wait(wait_time)
+                    loop_action = self.look_and_wait(wait_time)
 
         return ObjectActionReturn(action_return=find_action.action_return, callback_return=callback_return)
+
+    def click(self, sleep_in=0):
+        self.logger.info(f'{self.__class__}: Click')
+        assert self.location, f'{self.__class__}: Location is None!'
+        self.service_hub.screen_touch.execute(
+            screen_touch.ACTION_CLICK,
+            pixel=self.location, sleep_in=sleep_in
+        )
+
+    def find_all_and_click(self, wait_time=1, try_time=1, sleep_time=1):
+        """
+        find all and click,
+        make sure the window containing object is fully loaded
+        :param sleep_time:
+        :return:
+        """
+        found_all = self.look_and_wait(
+            wait_time=wait_time,
+            try_time=try_time,
+            get_all=True).action_return
+
+        if found_all:
+            for found in found_all:
+                self.service_hub.screen_touch.execute(
+                    screen_touch.ACTION_CLICK,
+                    pixel=found[0], sleep_in=sleep_time)
+
+        return found_all

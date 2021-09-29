@@ -51,7 +51,7 @@ class Capture(AbsService):
             select_loc = maxLoc
 
         if select_value < threshold:
-            self.logger.info(f'{self.__class__}:_try_match_template: return None! select_value < threshold '
+            self.logger.info(f'{self.__class__}: return None! select_value < threshold '
                              f'({select_value}<{threshold}).')
             return None
 
@@ -60,11 +60,11 @@ class Capture(AbsService):
                              select_loc[1] + template.shape[0] / 2,
                              convert_to_xy_device=True)
         if not return_pixel.is_in(restricted_box):
-            self.logger.info(f'{self.__class__}:_try_match_template: return None! selected Pixel{return_pixel} '
+            self.logger.info(f'{self.__class__}: return None! selected Pixel{return_pixel} '
                              f'is not in restricted_box {restricted_box}.')
             return None
 
-        self.logger.info(f'{self.__class__}:_try_match_template: found match at Pixel{return_pixel}, match value={select_value} ')
+        self.logger.info(f'{self.__class__}: found match at Pixel{return_pixel}, match value={select_value} ')
         return select_value, matching_result, return_pixel
 
     def _match_item_template(self, obj, threshold,
@@ -73,7 +73,7 @@ class Capture(AbsService):
                              metric=cv2.TM_CCOEFF_NORMED,
                              return_all=False,
                              show=False):
-        self.logger.info(f'{self.__class__}:_match_item_template: Start matching {obj.name}!')
+        self.logger.info(f'{self.__class__}: Start matching {obj.name}!')
 
         if image is None:
             image_bytes = self.device.adb_screen_cap()
@@ -110,12 +110,11 @@ class Capture(AbsService):
                                                         template])
 
         if select_value == 0:
-            self.logger.info(f'{self.__class__}:_match_item_template: return None, none of teamplate matched!')
+            self.logger.info(f'{self.__class__}: return None, none of teamplate matched!')
             return None
 
         if show:
-            self.logger.info(f'{self.__class__}:_match_item_template: Show: '
-                             f'found {len(all_select_locs)} matches! Max_value={select_value}')
+            self.logger.info(f'{self.__class__}: {len(all_select_locs)} matches! Max_value={select_value}')
             # Draw all rectangle around the matched points.
             for select_locs in all_select_locs:
                 px, py = select_locs[0].get_cv_point()

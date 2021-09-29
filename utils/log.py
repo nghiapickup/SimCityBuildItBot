@@ -14,7 +14,8 @@ class LogHandle:
     """
     config = Config.get_instance().log_config
     base_log_folder = config.log_dir
-    log_formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
+    format = '%(asctime)s [%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s'
+    log_formatter = logging.Formatter(format)
 
     def __init__(self, name, category='', test_mode=False):
         self.test_mode = test_mode

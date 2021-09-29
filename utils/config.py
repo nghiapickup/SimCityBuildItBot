@@ -24,6 +24,7 @@ class BuildingConfig:
     def __init__(self, config_yaml):
         self.factory_count = config_yaml['factory_count']
         self.factory_produce_list = config_yaml['factory_produce_list']
+        self.factory_check_ad = config_yaml['factory_check_ad']
 
 
 class Config:

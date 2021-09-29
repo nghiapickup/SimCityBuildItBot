@@ -1,3 +1,5 @@
+import time
+
 from job.job import AbsJob
 from object.banner_ad import BannerAd
 from object.button import BntFactory
@@ -22,12 +24,11 @@ class ClickOpinion(AbsJob):
         opinion.find_and_click(loop=True, sleep_time=1, callback=self._handle_opinion)
 
     def _handle_opinion(self, found_opinion):
-        opinion_loc, template_id, score = found_opinion
+        opinion_loc, template_id, score = found_opinion[0]
         self.logger.info(f'Found opinion {OPINION_TEMPLATE_NAME[template_id]}:{score}!')
 
         if template_id == opinion.OPINION_AD:
-            ad_banner = BannerAd().watch(callback=self._collect_ad_reward())
-
+            BannerAd().watch(wait_time=3, callback=self._collect_ad_reward)
         elif template_id == opinion.OPINION_SIMOLEON1 or template_id == opinion.OPINION_SIMOLEON2:
             self._handle_simoleon()
         else:
@@ -38,12 +39,11 @@ class ClickOpinion(AbsJob):
         is_collected = False
         # find reward button
         reward_bnt = BntFactory.make(button.BNT_AD_REWARD)
-        reward_action = reward_bnt.find_and_click(wait_time=5, sleep_time=5)
-        if reward_action.action_return is not None:
+        if reward_bnt.find_and_click(try_time=3, wait_time=2, sleep_time=5).ok:
             # Long sleep after collect reward -> change to opened box
             collected_reward_bnt = BntFactory.make(button.BNT_AD_REWARD_COLLECTED)
-            collected_reward_action = collected_reward_bnt.find_and_click(wait_time=5, sleep_time=1)
-            if collected_reward_action.action_return is not None:
+            collected_reward_action = collected_reward_bnt.find_and_click(try_time=3, wait_time=3, sleep_time=1)
+            if collected_reward_action.ok:
                 is_collected = True
 
         if not is_collected:
@@ -54,7 +54,7 @@ class ClickOpinion(AbsJob):
     def _handle_simoleon(self):
         no_bnt = BntFactory.make(button.BNT_NO_THANKS)
         no_action = no_bnt.find_and_click(wait_time=3)
-        if no_action.action_return is None:
+        if not no_action.ok:
             mes = f'{self.__class__}_handle_simoleon: cannot close simoleon opinion!'
             raise ModuleNotFoundError(mes)
         return True

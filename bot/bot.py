@@ -19,6 +19,7 @@ class Bot:
         :param name:
         """
         self.logger = LogHandle('bot').logger
+        self.logger.info(f'{self.__class__}: Start bot {name}')
         self.name = name
 
         self.service_hub = ServiceHub.get_instance()

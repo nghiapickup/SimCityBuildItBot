@@ -24,55 +24,62 @@ class BasicItem(BasicObject):
     def __init__(self, name):
         super().__init__(name)
         self.produce_time = None
+        self.produce_time_off = None
+
+    def set_produce_time(self, time, time_off):
+        assert  time > time_off, \
+            f'{self.__class__}: proceduce_time must be larger than produce_time_off'
+        self.produce_time_off = time_off
+        self.produce_time = time - time_off
 
 
 class Metal(BasicItem):
     def __init__(self):
         super().__init__("metal")
         self.n_sample = 2
-        self.produce_time = 1*60
+        self.set_produce_time(1*60, 5)
 
 
 class Wood(BasicItem):
     def __init__(self):
         super().__init__("wood")
         self.n_sample = 2
-        self.produce_time = 3*60
+        self.set_produce_time(3*60, 5)
 
 
 class Plastic(BasicItem):
     def __init__(self):
         super().__init__("plastic")
         self.n_sample = 2
-        self.produce_time = 9*60
+        self.set_produce_time(9*60, 5)
 
 
 class Seed(BasicItem):
     def __init__(self):
         super().__init__("seed")
         self.n_sample = 2
-        self.produce_time = 20*60
+        self.set_produce_time(20*60, 5)
 
 
 class Mineral(BasicItem):
     def __init__(self):
         super().__init__("mineral")
         self.n_sample = 2
-        self.produce_time = 30*60
+        self.set_produce_time(30*60, 5)
 
 
 class Chemical(BasicItem):
     def __init__(self):
         super().__init__("chemical")
         self.n_sample = 2
-        self.produce_time = 2*60*60
+        self.set_produce_time(2*60*60, 5)
 
 
 class Textile(BasicItem):
     def __init__(self):
         super().__init__("textile")
         self.n_sample = 2
-        self.produce_time = 3*60*60
+        self.set_produce_time(3*60*60, 5)
 
 
 class ItemFactory:

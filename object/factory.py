@@ -1,6 +1,8 @@
+import time
 import timeit
 
 from object import button
+from object.banner_ad import BannerAd
 from object.button import BntFactory
 from object.item import ItemFactory
 from object.object import BasicObject
@@ -34,9 +36,10 @@ class Factory(BasicObject):
 
         # Special and fixed places in factory,
         # they will be set at the first time we produce
-        self.center_loc = self.service_hub.device.screen.center
-        self.next_bnt_loc = None
-        self.product_item_loc = None
+        self.location = self.service_hub.device.screen.center
+        self.next_bnt = BntFactory.make(button.BNT_RIGHT)
+        self.banner_ad = BannerAd()
+        self.bnt_collect = BntFactory.make(button.BNT_COLLECT)
 
         # produce time controling
         self.start_time = None
@@ -49,42 +52,45 @@ class Factory(BasicObject):
         if is_done: return 0
         return self.end_time - timeit.default_timer()
 
-    def click_next(self):
+    def click_next(self, check_ad=False):
         self.logger.info(f'{self.__class__}: click_next')
-        if self.next_bnt_loc is None:
-            bnt_next = BntFactory.make(button.BNT_RIGHT)
-            self.next_bnt_loc, _, _ = bnt_next.look().action_return[0]
+        if self.next_bnt.location is None:
+            self.next_bnt.look(save_loc=True)
 
-        self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=self.next_bnt_loc, sleep_in=1)
+        # Check whether ad is apply
+        if check_ad:
+            self.logger.info(f'{self.__class__}:click_next: check_ad')
+            self.click() # Click center to find ad
+            if self.banner_ad.look_and_wait().ok and self.banner_ad.watch().ok:
+                return False # Watched ad, false to click
+
+        self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=self.next_bnt.location, sleep_in=1)
+        return True
 
     def _count_empty_slot(self):
         bnt_empty = BntFactory.make(button.BNT_EMPTY)
-        found_empty = bnt_empty.look(get_all=True).action_return
-        if found_empty is None: return 0
-        return len(found_empty)
-
-    def click(self):
-        self.logger.info(f'{self.__class__}: click')
-        self.screen_touch.execute(screen_touch.ACTION_CLICK_CENTER)
+        find_empty = bnt_empty.look(get_all=True)
+        if not find_empty.ok: return 0
+        return len(find_empty.action_return)
 
     def start_produce(self):
         self.logger.info(f'{self.__class__}: start_produce {self.product_item.name}')
-        if self.product_item_loc is None:
-            self.product_item_loc = self.product_item.look().action_return[0][0]
+        if self.product_item.location is None:
+            self.product_item.look(save_loc=True)
 
         # Collect all finished item first
         # find collect button (no re-find if is not) and click all (no wait after click)
-        bnt_collect = BntFactory.make(button.BNT_COLLECT) # it is safe for click and find again
-        bnt_collect.find_and_click(wait_time=0, sleep_time=0, loop=True)
+        # it is safe for click and find again
+        self.bnt_collect.find_all_and_click(sleep_time=0.15)
 
         is_produced = False
         empty_count = self._count_empty_slot()
         if empty_count:
-            self.logger.info(f'{self.__class__}: found {empty_count} slot(s)')
+            self.logger.info(f'{self.__class__}: found {empty_count} empty slot(s)')
             for _ in range(0, empty_count):
                 self.screen_touch.execute(
                     screen_touch.ACTION_WIPE_TO_CENTER,
-                    from_pixel=self.product_item_loc,
+                    from_pixel=self.product_item.location,
                     n_step=3,
                     hold=0
                 )

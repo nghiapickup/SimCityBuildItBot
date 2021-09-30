@@ -1,0 +1,1 @@
+python -u run_bot.py produce_factory

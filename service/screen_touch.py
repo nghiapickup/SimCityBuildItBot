@@ -58,9 +58,9 @@ class Touch(AbsService):
             ACTION_WIPE_TO_CENTER: self._wipe_to_center
         }
 
-    def execute(self, action_code, sleep_in=None, **kwargs):
+    def execute(self, action_code, sleep_in=0, **kwargs):
         self.action_map[action_code](**kwargs)
-        if sleep_in is not None:
+        if sleep_in:
             self.logger.info(f'{self.__class__}: sleep_in={sleep_in} seconds')
             time.sleep(sleep_in)
 

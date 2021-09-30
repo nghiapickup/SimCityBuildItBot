@@ -6,11 +6,11 @@ device:
   screen_y: 1920
 
 resources:
-  screen_shot_dir: /nghianh3/SimCityBuildItBot/resources/screen_shot/
-  object_image_dir: /nghianh3/SimCityBuildItBot/resources/object/
+  screen_shot_dir: resources/screen_shot/
+  object_image_dir: resources/object/
 
 logging:
-  log_dir: /nghianh3/SimCityBuildItBot/log/
+  log_dir: log/
 
 building:
   factory_count: 6

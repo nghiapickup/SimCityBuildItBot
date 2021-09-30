@@ -6,6 +6,7 @@ from service.service import AbsService
 
 # Event service
 SCREEN_SHOT = 1
+GET_RECENT_IMAGE = 2
 SCREEN_MATCH_TEMPLATE = 3
 
 
@@ -17,27 +18,35 @@ class Capture(AbsService):
     def __init__(self, device):
         super().__init__()
         self.device = device
-
         self.action_map = {
             SCREEN_SHOT: self._screen_shot,
+            GET_RECENT_IMAGE: self._get_screen_capture,
             SCREEN_MATCH_TEMPLATE: self._match_item_template
         }
+
+        self.recent_screen = None
 
     def execute(self, action_code, **kwargs):
         return self.action_map[action_code](**kwargs)
 
-    def _screen_shot(self, imread=cv2.IMREAD_UNCHANGED, resize=False, show=True, save_file=None):
+    def _screen_shot(self, imread=cv2.IMREAD_UNCHANGED, resize=False, show=False, save_file=None):
         self.logger.info(f'{self.__class__}:_screen_shot: ({imread} {save_file})')
         image_bytes = self.device.adb_screen_cap()
         image = cv2.imdecode(np.fromstring(image_bytes, np.uint8), imread)
+        self.recent_screen = image
 
-        if save_file is not None: cv2.imwrite(save_file, image)
-        if resize: image = cv2.resize(image, (image.shape[0] / 2, image.shape[1] / 2))  # Resize image
+        if save_file is not None:
+            cv2.imwrite(save_file, image)
+        if resize:
+            image = cv2.resize(image, (image.shape[0] / 2, image.shape[1] / 2))  # Resize image
         if show:
             cv2.imshow("", image)
             cv2.waitKey(0)
             cv2.destroyWindow("")
-        return True
+        return image
+
+    def _get_screen_capture(self):
+        return self.recent_screen
 
     def _try_match_template(self, image, template, metric, threshold, restricted_box):
         matching_result = cv2.matchTemplate(image, template, metric)
@@ -76,8 +85,7 @@ class Capture(AbsService):
         self.logger.info(f'{self.__class__}: Start matching {obj.name}!')
 
         if image is None:
-            image_bytes = self.device.adb_screen_cap()
-            image = cv2.imdecode(np.fromstring(image_bytes, np.uint8), imread)
+            image = self._screen_shot(imread=imread)
 
         all_select_locs = []
         return_pixel, template_id, select_template, select_value, matching_result = None, None, None, 0, None

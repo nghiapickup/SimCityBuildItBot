@@ -60,7 +60,7 @@ class ProduceFactoryBot(Bot):
                 if factory_status[fid] > 0:
                     self.logger.info(f'{fac.product_item.name} is not ready, go to next factory!')
                     check_ad = fac.product_item.name in self.factory_ad_list
-                    if fac.click_next(check_ad): # continue if clicked
+                    if fac.click_next(check_ad=check_ad): # continue if clicked
                         continue
                 produce_status = fac.start_produce()
                 if produce_status: # sell what we produce
@@ -68,19 +68,18 @@ class ProduceFactoryBot(Bot):
                 fac.click_next()
 
             if self.trade_depot.can_trade():
-                if self.open_trade_depot():
-                    self.trade_depot.start_trade()
-                    bnt_close.find_and_click(wait_time=0, sleep_time=2) # wait 2s after close trade pot
+                self.open_trade_depot()
+                self.trade_depot.start_trade()
+                bnt_close.find_and_click(wait_time=0, sleep_time=0)
 
     def open_trade_depot(self):
         self.logger.info(f'{self.__class__}: click_trade_depot')
         self._click_trade_depot()
-        if not self.trade_depot.look().ok:
+        if not self.trade_depot.look_and_wait(wait_time=1, try_time=1).ok:
             banner_ad = BannerAd()
-            if banner_ad.look().ok: banner_ad.watch()
+            if banner_ad.look().ok:
+                banner_ad.watch()
             self._click_trade_depot()
-
-        return True
 
     def _click_trade_depot(self):
         self.service_hub.screen_touch.execute(
@@ -89,14 +88,8 @@ class ProduceFactoryBot(Bot):
             sleep_in=2)
 
     def _click_first_factory(self):
-        click_count = 0
         first_factory = self.factory_list[0]
-        first_factory.click()
-        while click_count < first_factory.num_slot + 1 and not first_factory.look().ok:
-            first_factory.click()
-            click_count += 1
-
-        if click_count >= first_factory.num_slot + 1:
-            time.sleep(2)  # hold there for changing window
-            if not first_factory.look().ok:
-                raise ModuleNotFoundError(f'{self.__class__}: Cannot click into {first_factory.name}!')
+        first_factory.click(sleep_in=0.2)
+        for _ in range(0, first_factory.num_slot+1):
+            if first_factory.look().ok: break
+            first_factory.click(sleep_in=0.2)

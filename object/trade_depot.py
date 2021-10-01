@@ -10,9 +10,15 @@ class SaleItemWindow(BasicObject):
     def __init__(self):
         super(SaleItemWindow, self).__init__('sale_item_window')
         self.n_sample = 1
+        self.location_service = self.service_hub.object_location
+
+        self.bnt_close_sale = BntFactory.make(button.BNT_CLOSE_BLUE)
+        self.bnt_close_sale.location = self.location_service.parse_location('trade_depot', 'bnt_close_sale')
+        self.bnt_put_sale = BntFactory.make(button.BNT_TRADE_PUT)
+        self.bnt_put_sale.location = self.location_service.parse_location('trade_depot', 'bnt_put_sale')
         self.plus_buttons = [BntFactory.make(button.BNT_TRADE_PUT), BntFactory.make(button.BNT_TRADE_PUT)]
-        self.bnt_put_trade = BntFactory.make(button.BNT_TRADE_PUT)
-        self.bnt_close = BntFactory.make(button.BNT_CLOSE_BLUE)
+        self.plus_buttons[0].location = self.location_service.parse_location('trade_depot', 'bnt_sale_plus_1')
+        self.plus_buttons[1].location = self.location_service.parse_location('trade_depot', 'bnt_sale_plus_2')
 
 
 class TradeDepot(BasicObject):
@@ -22,14 +28,21 @@ class TradeDepot(BasicObject):
 
         self.screen_touch = self.service_hub.screen_touch
         self.screen_capture = self.service_hub.screen_capture
+        self.location_service = self.service_hub.object_location
+
         self.sale_window = SaleItemWindow()
         self.trade_set = set(trade_items)
         self.bnt_trade_new = BntFactory.make(button.BNT_TRADE_NEW)
         self.bnt_trade_done = BntFactory.make(button.BNT_TRADE_DONE)
         self.end_trade_bnt = BntFactory.make(button.BNT_BUY_TRADE_SLOT)
+        self.bnt_close_depot = BntFactory.make(button.BNT_CLOSE_BLUE)
+        self.bnt_close_depot.location = self.location_service.parse_location('trade_depot', 'bnt_close_depot')
 
     def can_trade(self):
         return len(self.trade_set) # have sth to sell
+
+    def close(self):
+        self.bnt_close_depot.find_and_click(wait_time=0, sleep_time=1.5)
 
     def start_trade(self):
         self.logger.info(f'{self.__class__}: Start trading')
@@ -92,37 +105,18 @@ class TradeDepot(BasicObject):
                 )
                 if find_trade_item.ok:
                     self.logger.info(f'{self.__class__}: Start to trade {trade_item.name}!')
-                    # find plus button and save loc for the next time
-                    if self.sale_window.plus_buttons[0].location is None:
-                        bnt_plus = BntFactory.make(button.BNT_TRADE_PLUS)
-                        plus_action = bnt_plus.look(image=screen_image, get_all=True)
-                        assert len(plus_action.action_return) == 2, \
-                            'Plus button number in sale window must be 2, ' \
-                            'but {len(plus_action.action_return)} found!'
-                        self.sale_window.plus_buttons[0].location = plus_action.action_return[0][0]
-                        self.sale_window.plus_buttons[1].location = plus_action.action_return[1][0]
                     for plus_bnt in self.sale_window.plus_buttons:
-                        self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=plus_bnt.location, hold=1.5)
+                        self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=plus_bnt.location, hold=1.25)
 
                     # put sale bnt
-                    if self.sale_window.bnt_put_trade.location is None:
-                        found_bnt = self.sale_window.bnt_put_trade.find_and_click(
-                            image=screen_image, try_time=0,
-                            wait_time=0, sleep_time=1
-                        )
-                        self.sale_window.bnt_put_trade.location = found_bnt.action_return[0][0]
                     self.screen_touch.execute(screen_touch.ACTION_CLICK,
-                                              pixel=self.sale_window.bnt_put_trade.location,
+                                              pixel=self.sale_window.bnt_put_sale.location,
                                               sleep_in=1)
-
                     self.trade_set.add(trade_item)
                     is_done = True
                     break
 
             # close trade item window if failed to create new trade
-            if not is_done:
-                if not self.sale_window.bnt_close.location:
-                    self.sale_window.bnt_close.look(image=screen_image, save_loc=True)
-                self.sale_window.bnt_close.click(sleep_in=1.5)
+            if not is_done: self.sale_window.bnt_close_sale.click(sleep_in=1.5)
 
         return is_done

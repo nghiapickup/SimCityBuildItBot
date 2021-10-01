@@ -1,5 +1,5 @@
 import os, subprocess
-from service.service import AbsService
+from service.service import BasicService
 from utils.config import Config
 from object.display import Screen
 
@@ -8,7 +8,7 @@ GENYMOTION = 1
 ANDROID_STUDIO = 2
 
 
-class Device(AbsService):
+class Device(BasicService):
     def __init__(self, serial=None, type=GENYMOTION):
         """
         Init connection to a device. By default the device is loaded from genymotion emulator

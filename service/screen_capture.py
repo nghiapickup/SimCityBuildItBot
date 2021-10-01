@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from object.display import Pixel
-from service.service import AbsService
+from service.service import BasicService
 
 # Event service
 SCREEN_SHOT = 1
@@ -14,7 +14,7 @@ def img_add_contrast(image, alpha=1.5, beta=50):
     return cv2.addWeighted(image, alpha, np.zeros(image.shape, image.dtype), 0, beta)
 
 
-class Capture(AbsService):
+class Capture(BasicService):
     def __init__(self, device):
         super().__init__()
         self.device = device

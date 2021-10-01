@@ -3,7 +3,7 @@ from utils.log import LogHandle
 from job.hub import JobHub
 
 
-class Bot:
+class BasicBot:
     def __init__(self, name):
         """
         A bot performs a single or combination of tasks, independent to each others,

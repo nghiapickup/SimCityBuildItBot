@@ -1,7 +1,7 @@
 import time
 
 from object.display import Pixel
-from service.service import AbsService
+from service.service import BasicService
 
 # Event list
 TOUCH_DOWN = 1
@@ -36,7 +36,7 @@ class EV_SYN:
     SYN_REPORT = 0
 
 
-class Touch(AbsService):
+class Touch(BasicService):
     def __init__(self, device):
         super().__init__()
 

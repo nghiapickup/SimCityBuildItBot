@@ -45,6 +45,10 @@ class Pixel:
     def from_cv_point(cls, cv_point):
         return cls(cv_point[0], cv_point[1], convert_to_xy_device=True)
 
+    @classmethod
+    def from_list(cls, l):
+        return cls(float(l[0]), float(l[1]))
+
     def get_cv_point(self):
         return self.y, self.screen_x - self.x
 

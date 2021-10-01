@@ -1,8 +1,8 @@
 import time
-from bot.bot import Bot
+from bot.basicbot import BasicBot
 
 
-class ClickOpinionBot(Bot):
+class ClickOpinionBot(BasicBot):
     def __init__(self):
         super().__init__('Click Opinion Bot')
 

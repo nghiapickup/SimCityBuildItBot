@@ -12,11 +12,13 @@ from service import screen_touch, screen_capture
 FACTORY_SMALL = 1
 FACTORY_BASIC = 2
 FACTORY_MASS = 3
+FACTORY_HIGHTECH = 4
 
 FACTORY_SLOT = {
     FACTORY_SMALL: 2,
     FACTORY_BASIC: 3,
-    FACTORY_MASS: 4
+    FACTORY_MASS: 4,
+    FACTORY_HIGHTECH: 5
 }
 
 
@@ -31,14 +33,14 @@ class Factory(BasicObject):
 
         self.screen_touch = self.service_hub.screen_touch
         self.screen_capture = self.service_hub.screen_capture
+        self.location_service = self.service_hub.object_location
 
-        self.product_item = ItemFactory.from_str(item_name)
         self.num_slot = FACTORY_SLOT[factory_type]
-
-        # Special and fixed places in factory,
-        # they will be set at the first time we produce
         self.location = self.service_hub.device.screen.center
-        self.next_bnt = BntFactory.make(button.BNT_RIGHT)
+        self.product_item = ItemFactory.from_str(item_name)
+        self.product_item.location = self.location_service.parse_location('factory', item_name)
+        self.bnt_next = BntFactory.make(button.BNT_RIGHT)
+        self.bnt_next.location = self.location_service.parse_location('factory', 'bnt_next')
         self.banner_ad = BannerAd()
         self.bnt_collect = BntFactory.make(button.BNT_COLLECT)
 
@@ -55,9 +57,6 @@ class Factory(BasicObject):
 
     def click_next(self, check_ad=False, sleep_in=1):
         self.logger.info(f'{self.__class__}: click_next')
-        if self.next_bnt.location is None:
-            screen_image = self.screen_capture.execute(screen_capture.GET_RECENT_IMAGE)
-            self.next_bnt.look(image=screen_image, save_loc=True)
 
         # Check whether ad is apply, only when time left > 20 mins
         # (to make sure there is no finished product outside, if is clicked, factory window will be closed)
@@ -68,10 +67,11 @@ class Factory(BasicObject):
                 return False # Watched ad, false to click
 
         # force to wait after click next -> change window
-        self.screen_touch.execute(screen_touch.ACTION_CLICK, sleep_in=sleep_in, pixel=self.next_bnt.location)
+        self.screen_touch.execute(screen_touch.ACTION_CLICK, sleep_in=sleep_in, pixel=self.bnt_next.location)
         return True
 
-    def _count_empty_slot(self, image):
+    @staticmethod
+    def _count_empty_slot(image):
         bnt_empty = BntFactory.make(button.BNT_EMPTY)
         find_empty = bnt_empty.look(image, get_all=True)
         if not find_empty.ok: return 0
@@ -91,11 +91,7 @@ class Factory(BasicObject):
             num_collected = len(find_collected_bnt.action_return)
 
         empty_count = self._count_empty_slot(image=screen_image)
-        empty_count = self._count_empty_slot(image=screen_image)
         total_empty = num_collected + empty_count
-
-        if self.product_item.location is None:
-            self.product_item.look(image=screen_image, save_loc=True)
 
         is_produced = False
         if total_empty:

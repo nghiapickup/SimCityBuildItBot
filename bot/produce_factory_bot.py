@@ -64,7 +64,7 @@ class ProduceFactoryBot(BasicBot):
                         continue
                 produce_status = fac.start_produce()
                 if produce_status: # sell what we produce
-                    self.trade_depot.trade_set.add(fac.product_item)
+                    self.trade_depot.trade_list.add(fac.product_item)
                 fac.click_next()
 
             if self.trade_depot.can_trade():

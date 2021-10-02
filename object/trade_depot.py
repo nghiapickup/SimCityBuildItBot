@@ -31,7 +31,7 @@ class TradeDepot(BasicObject):
         self.location_service = self.service_hub.object_location
 
         self.sale_window = SaleItemWindow()
-        self.trade_set = set(trade_items)
+        self.trade_list = trade_items
         self.bnt_trade_new = BntFactory.make(button.BNT_TRADE_NEW)
         self.bnt_trade_done = BntFactory.make(button.BNT_TRADE_DONE)
         self.end_trade_bnt = BntFactory.make(button.BNT_BUY_TRADE_SLOT)
@@ -39,7 +39,7 @@ class TradeDepot(BasicObject):
         self.bnt_close_depot.location = self.location_service.parse_location('trade_depot', 'bnt_close_depot')
 
     def can_trade(self):
-        return len(self.trade_set) # have sth to sell
+        return len(self.trade_list) # have sth to sell
 
     def close(self):
         self.bnt_close_depot.find_and_click(wait_time=0, sleep_time=1.5)
@@ -90,7 +90,6 @@ class TradeDepot(BasicObject):
         perform new trade, if all trade item is traded,
         return False to exit the loop
         :param _: callback annotator, found item info
-        :param trade_list: list item to trade
         :return:
         """
         is_done = False
@@ -98,7 +97,7 @@ class TradeDepot(BasicObject):
             # Save time by using previous screen shot
             screen_image = self.screen_capture.execute(screen_capture.GET_RECENT_IMAGE)
             while self.can_trade(): # Make sure you are in sale window
-                trade_item = self.trade_set.pop()
+                trade_item = self.trade_list.pop()
                 find_trade_item = trade_item.find_and_click(
                     image=screen_image, wait_time=0,
                     try_time=0, sleep_time=0
@@ -112,7 +111,6 @@ class TradeDepot(BasicObject):
                     self.screen_touch.execute(screen_touch.ACTION_CLICK,
                                               pixel=self.sale_window.bnt_put_sale.location,
                                               sleep_in=1)
-                    self.trade_set.add(trade_item)
                     is_done = True
                     break
 

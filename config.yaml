@@ -8,6 +8,7 @@ device:
 resources:
   screen_shot_dir: resources/screen_shot/
   object_image_dir: resources/object/
+  object_location: resources/object_loc.yaml
 
 logging:
   log_dir: log/

@@ -1,5 +1,5 @@
 import time
-from bot.bot import Bot
+from bot.basicbot import BasicBot
 from object.banner_ad import BannerAd
 from object.button import BntFactory
 from object import button
@@ -11,7 +11,7 @@ from service import screen_touch
 from utils.config import Config
 
 
-class ProduceFactoryBot(Bot):
+class ProduceFactoryBot(BasicBot):
     def __init__(self):
         super().__init__('Running Factory')
         self.touch_service = self.service_hub.screen_touch
@@ -70,7 +70,7 @@ class ProduceFactoryBot(Bot):
             if self.trade_depot.can_trade():
                 self.open_trade_depot()
                 self.trade_depot.start_trade()
-                bnt_close.find_and_click(wait_time=0, sleep_time=0)
+                self.trade_depot.close()
 
     def open_trade_depot(self):
         self.logger.info(f'{self.__class__}: click_trade_depot')

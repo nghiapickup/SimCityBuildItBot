@@ -21,6 +21,7 @@ class ResourceConfig(BaseConfig):
         super().__init__(project_dir, config_yaml)
         self.screen_shot_dir = project_dir + config_yaml['screen_shot_dir']
         self.object_image_dir = project_dir + config_yaml['object_image_dir']
+        self.object_loc_dir = project_dir + config_yaml['object_location']
 
 
 class LogConfig(BaseConfig):

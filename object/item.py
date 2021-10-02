@@ -8,6 +8,7 @@ SEED = 4
 MINERAL = 5
 CHEMICAL = 6
 TEXTILE = 7
+SUGAR = 8
 
 ITEM_STR = {
     'metal': METAL,
@@ -16,7 +17,8 @@ ITEM_STR = {
     'seed': SEED,
     'mineral': MINERAL,
     'chemical': CHEMICAL,
-    'textile': TEXTILE
+    'textile': TEXTILE,
+    'sugar': SUGAR
 }
 
 
@@ -37,49 +39,56 @@ class Metal(BasicItem):
     def __init__(self):
         super().__init__("metal")
         self.n_sample = 2
-        self.set_produce_time(1*60, 5)
+        self.set_produce_time(1*60, 2)
 
 
 class Wood(BasicItem):
     def __init__(self):
         super().__init__("wood")
         self.n_sample = 2
-        self.set_produce_time(3*60, 5)
+        self.set_produce_time(3*60, 2)
 
 
 class Plastic(BasicItem):
     def __init__(self):
         super().__init__("plastic")
         self.n_sample = 2
-        self.set_produce_time(9*60, 5)
+        self.set_produce_time(9*60, 2)
 
 
 class Seed(BasicItem):
     def __init__(self):
         super().__init__("seed")
         self.n_sample = 2
-        self.set_produce_time(20*60, 5)
+        self.set_produce_time(20*60, 2)
 
 
 class Mineral(BasicItem):
     def __init__(self):
         super().__init__("mineral")
         self.n_sample = 2
-        self.set_produce_time(30*60, 5)
+        self.set_produce_time(30*60, 2)
 
 
 class Chemical(BasicItem):
     def __init__(self):
         super().__init__("chemical")
         self.n_sample = 2
-        self.set_produce_time(2*60*60, 5)
+        self.set_produce_time(2*60*60, 2)
 
 
 class Textile(BasicItem):
     def __init__(self):
         super().__init__("textile")
         self.n_sample = 2
-        self.set_produce_time(3*60*60, 5)
+        self.set_produce_time(3*60*60, 2)
+
+
+class Sugar(BasicItem):
+    def __init__(self):
+        super().__init__("sugar")
+        self.n_sample = 1
+        self.set_produce_time(4*60*60, 2)
 
 
 class ItemFactory:
@@ -90,7 +99,8 @@ class ItemFactory:
         SEED: Seed,
         MINERAL: Mineral,
         CHEMICAL: Chemical,
-        TEXTILE: Textile
+        TEXTILE: Textile,
+        SUGAR: Sugar
     }
 
     @staticmethod

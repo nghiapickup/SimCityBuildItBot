@@ -89,7 +89,7 @@ class ProduceFactoryBot(BasicBot):
 
     def _click_first_factory(self):
         first_factory = self.factory_list[0]
-        first_factory.click(sleep_in=0.2)
+        first_factory.click(sleep_in=0.3)
         for _ in range(0, first_factory.num_slot+1):
             if first_factory.look().ok: break
-            first_factory.click(sleep_in=0.2)
+            first_factory.click(sleep_in=0.3)

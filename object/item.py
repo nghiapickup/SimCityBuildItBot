@@ -1,6 +1,7 @@
 from object.object import BasicObject
 
-# Item type id
+# Factory
+EMPTY = 0
 METAL = 1
 WOOD = 2
 PLASTIC = 3
@@ -11,6 +12,7 @@ TEXTILE = 7
 SUGAR = 8
 
 ITEM_STR = {
+    'empty': EMPTY,
     'metal': METAL,
     'wood': WOOD,
     'plastic': PLASTIC,
@@ -27,12 +29,19 @@ class BasicItem(BasicObject):
         super().__init__(name)
         self.produce_time = None
         self.produce_time_off = None
+        self.threshold = 0.9
 
     def set_produce_time(self, time, time_off):
         assert  time > time_off, \
-            f'{self.__class__}: proceduce_time must be larger than produce_time_off'
+            f'{self.__class__}: produce_time must be > produce_time_off'
         self.produce_time_off = time_off
         self.produce_time = time - time_off
+
+
+class EmptyBox(BasicItem):
+    def __init__(self):
+        super().__init__("empty_box")
+        self.n_sample = 2
 
 
 class Metal(BasicItem):
@@ -40,6 +49,7 @@ class Metal(BasicItem):
         super().__init__("metal")
         self.n_sample = 2
         self.set_produce_time(1*60, 2)
+
 
 
 class Wood(BasicItem):
@@ -87,12 +97,13 @@ class Textile(BasicItem):
 class Sugar(BasicItem):
     def __init__(self):
         super().__init__("sugar")
-        self.n_sample = 1
+        self.n_sample = 2
         self.set_produce_time(4*60*60, 2)
 
 
 class ItemFactory:
     item_map = {
+        EMPTY: EmptyBox,
         METAL: Metal,
         WOOD: Wood,
         PLASTIC: Plastic,

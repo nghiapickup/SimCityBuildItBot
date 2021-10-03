@@ -1,6 +1,8 @@
 import time
 import cv2
+import re
 
+from object.display import Pixel
 from utils.config import Config
 from service.hub import ServiceHub
 from service import screen_capture, screen_touch
@@ -24,6 +26,10 @@ class BasicObject:
 
         self.location = None
         self.service_hub = ServiceHub.get_instance()
+        self.object_location = self.service_hub.object_location
+        self.device = self.service_hub.device
+        self.screen_touch = self.service_hub.screen_touch
+        self.screen_capture = self.service_hub.screen_capture
 
         # Config for template matching
         self.matching_service = screen_capture.SCREEN_MATCH_TEMPLATE
@@ -33,6 +39,16 @@ class BasicObject:
         self.n_sample = 2
         self.restricted_box = None  # Object is only exist in this box
 
+    @staticmethod
+    def apply_restricted_box(image, box):
+        return image[box[0].x:box[1].x,box[0].y:box[1].y]
+
+    @staticmethod
+    def show(image):
+        cv2.imshow("", image)
+        cv2.waitKey(0)
+        cv2.destroyWindow("")
+
     def look(self, image=None, get_all=False, save_loc=False, show=False):
         """
         Take a screen shot and find one object with the highest matching score
@@ -41,10 +57,9 @@ class BasicObject:
         look_return = self.service_hub.screen_capture.execute(
             self.matching_service,
             image=image,
+            obj=self,
             imread=self.imread,
             metric=self.matching_metric,
-            threshold=self.threshold,
-            obj=self,
             return_all=get_all,
             show=show)
 
@@ -130,3 +145,43 @@ class BasicObject:
                             break
 
         return ObjectActionReturn(found_all.action_return, callback_return)
+
+    def extract_text(self, image, find_action_return, text_filter=None):
+        res = []
+        for found_result in find_action_return:
+            loc, _, template = found_result
+            # extract obj bounding box
+            image_loc = loc.get_image_point()
+            x_range = int(image_loc[0] - template.shape[0] / 2), int(image_loc[0] + template.shape[0] / 2)
+            y_range = int(image_loc[1] - template.shape[1] / 2+10), int(image_loc[1] + template.shape[1] / 2-10)
+            obj_image = image[x_range[0]:x_range[1], y_range[0]:y_range[1]]
+
+            self.show(image)
+            # get text from obj's box
+            text = self.screen_capture.execute(screen_capture.EXTRACT_STRING, image=obj_image)
+            print(text)
+            if text_filter:
+                text = text_filter(text)
+            res.append(text)
+
+        return res
+
+    def get_time_from_text(self, text):
+        rs = re.findall('([0-9]+)s', text)
+        assert len(rs) <= 1, f'There are more than 1 s charater!'
+        rm = re.findall('([0-9]+)m', text)
+        assert len(rm) <= 1, f'There are more than 1 m charater!'
+        rh = re.findall('([0-9]+)h', text)
+        assert len(rh) <= 1, f'There are more than 1 h charater!'
+
+        s = 0
+        if len(rs) > 0: s = int(rs[0])
+        m = 0
+        if len(rm) > 0: m = int(rm[0])
+        h = 0
+        if len(rh) > 0: h = int(rh[0])
+
+        self.logger.info(f'{self.name}: {h}h:{m}m:{s}s')
+        print(f'{self.name}: {h}h:{m}m:{s}s')
+        return 3600 * h + 60 * m + s
+

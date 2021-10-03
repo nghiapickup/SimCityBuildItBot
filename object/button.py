@@ -1,7 +1,6 @@
 from object.object import BasicObject
 
 # Button type
-BNT_EMPTY = 100
 BNT_TRADE_NEW = 101
 BNT_COLLECT = 102
 BNT_AD_WATCH = 103
@@ -16,9 +15,9 @@ BNT_AD_REWARD_COLLECTED = 111
 BNT_RIGHT = 112,
 BNT_YES = 113
 BNT_BUY_TRADE_SLOT = 114
+BNT_TIME = 115
 
 BNT_TYPE = {
-    'bnt_empty': BNT_EMPTY,
     'bnt_trade_new': BNT_TRADE_NEW,
     'bnt_collect': BNT_COLLECT,
     'bnt_ad_watch': BNT_AD_WATCH,
@@ -32,15 +31,9 @@ BNT_TYPE = {
     'bnt_ad_reward_collected': BNT_AD_REWARD_COLLECTED,
     'bnt_right': BNT_RIGHT,
     'bnt_yes': BNT_YES,
-    'bnt_buy_trade_slot': BNT_BUY_TRADE_SLOT
+    'bnt_buy_trade_slot': BNT_BUY_TRADE_SLOT,
+    'bnt_time': BNT_TIME
 }
-
-
-class BntEmpty(BasicObject):
-    def __init__(self):
-        super().__init__("bnt_empty")
-        self.n_sample = 2
-        self.threshold=0.9
 
 
 class BntTradeNew(BasicObject):
@@ -141,9 +134,15 @@ class BntBuyTradeSlot(BasicObject):
         self.threshold = 0.9
 
 
+class BntTime(BasicObject):
+    def __init__(self):
+        super().__init__('bnt_time')
+        self.n_sample = 1
+        self.threshold = 0.65
+
+
 class BntFactory(BasicObject):
     bnt_map = {
-        BNT_EMPTY: BntEmpty,
         BNT_TRADE_NEW: BntTradeNew,
         BNT_COLLECT: BntCollect,
         BNT_AD_WATCH: BntAdWatch,
@@ -157,7 +156,8 @@ class BntFactory(BasicObject):
         BNT_AD_REWARD_COLLECTED: BntAdRewardCollected,
         BNT_RIGHT: BntRight,
         BNT_YES: BntYes,
-        BNT_BUY_TRADE_SLOT: BntBuyTradeSlot
+        BNT_BUY_TRADE_SLOT: BntBuyTradeSlot,
+        BNT_TIME: BntTime
     }
 
     @staticmethod

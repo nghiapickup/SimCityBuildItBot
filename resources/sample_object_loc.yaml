@@ -4,7 +4,7 @@
 # - The log of trade depot from center of the first factory trade_depoy['loc']
 # - The log of the first tools manufacturer from the center of the first factory first_manufacturer['loc']
 trade_depot:
-  location: [60,500]
+  location: [300,545]
 
 first_manufacturer:
   location: [1,2]

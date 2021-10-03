@@ -36,6 +36,7 @@ class BuildingConfig(BaseConfig):
         self.factory_count = config_yaml['factory_count']
         self.factory_produce_list = config_yaml['factory_produce_list']
         self.factory_check_ad = config_yaml['factory_check_ad']
+        self.factory_base_list = config_yaml['factory_base_list']
 
 
 class Config:

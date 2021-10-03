@@ -1,9 +1,10 @@
 import time
 import timeit
 
-from object import button
+from object import button, item
 from object.banner_ad import BannerAd
 from object.button import BntFactory
+from object.display import Pixel
 from object.item import ItemFactory
 from object.object import BasicObject
 from service import screen_touch, screen_capture
@@ -48,10 +49,14 @@ class Factory(BasicObject):
         self.start_time = None
         self.end_time = None
 
+        # area where producing list is located
+        self.producing_area = [Pixel(int(self.device.screen.x_size * (3.0 / 4) - 50), 0),
+                               Pixel(self.device.screen.x_size, self.device.screen.y_size)]
+
     def produce_time_left(self):
         # don't know is True
         is_done = (self.start_time is None and self.end_time is None) \
-               or (timeit.default_timer() > self.end_time)
+                  or (timeit.default_timer() > self.end_time)
         if is_done: return 0
         return self.end_time - timeit.default_timer()
 
@@ -60,11 +65,11 @@ class Factory(BasicObject):
 
         # Check whether ad is apply, only when time left > 20 mins
         # (to make sure there is no finished product outside, if is clicked, factory window will be closed)
-        if check_ad and self.produce_time_left()>20*60:
+        if check_ad and self.produce_time_left() > 20 * 60:
             self.logger.info(f'{self.__class__}:click_next: check_ad')
-            self.click() # Click center to find ad
+            self.click()  # Click center to find ad
             if self.banner_ad.watch().ok:
-                return False # Watched ad, false to click
+                return False  # Watched ad, false to click
 
         # force to wait after click next -> change window
         self.screen_touch.execute(screen_touch.ACTION_CLICK, sleep_in=sleep_in, pixel=self.bnt_next.location)
@@ -72,7 +77,7 @@ class Factory(BasicObject):
 
     @staticmethod
     def _count_empty_slot(image):
-        bnt_empty = BntFactory.make(button.BNT_EMPTY)
+        bnt_empty = BntFactory.make(ItemFactory.from_id(item.EMPTY))
         find_empty = bnt_empty.look(image, get_all=True)
         if not find_empty.ok: return 0
         return len(find_empty.action_return)
@@ -109,3 +114,19 @@ class Factory(BasicObject):
             is_produced = True
 
         return is_produced
+
+    def find_time_boxes(self, image):
+        producing_image = self.apply_restricted_box(image, self.producing_area)
+        # find time button and match with producing list
+        bnt_time = BntFactory.make(button.BNT_TIME)
+        found_boxes = bnt_time.look(image=producing_image, get_all=True)
+
+        if found_boxes.ok:
+            res = self.extract_text(image=producing_image,
+                                    find_action_return=found_boxes.action_return,
+                                    text_filter=self.get_time_from_text)
+        else:
+            self.logger.info(f'{self.__class__}: Cannot find bnt_time!')
+            return None
+
+        return res

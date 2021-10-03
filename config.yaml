@@ -15,5 +15,6 @@ logging:
 
 building:
   factory_count: 6
+  factory_base_list: ['metal', 'wood', 'plastic', 'seed', 'mineral', 'chemical', 'textile', 'sugar']
   factory_produce_list: ['metal', 'wood', 'wood', 'seed', 'seed', 'plastic']
   factory_check_ad: ['chemical', 'textile']

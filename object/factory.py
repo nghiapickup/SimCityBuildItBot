@@ -29,7 +29,8 @@ class Factory(BasicObject):
 
     def __init__(self, factory_type, item_name):
         super().__init__("factory")
-        self.n_sample = 2
+        self.n_sample = 3
+        self.threshold = 0.7
 
         self.screen_touch = self.service_hub.screen_touch
         self.screen_capture = self.service_hub.screen_capture

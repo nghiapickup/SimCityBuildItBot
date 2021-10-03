@@ -14,6 +14,6 @@ logging:
   log_dir: log/
 
 building:
-  factory_count: 6
-  factory_produce_list: ['metal', 'wood', 'wood', 'seed', 'seed', 'plastic']
+  factory_count: 7
+  factory_produce_list: ['metal', 'wood', 'wood', 'seed', 'seed', 'plastic', 'plastic']
   factory_check_ad: ['chemical', 'textile']

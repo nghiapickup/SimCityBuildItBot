@@ -26,7 +26,7 @@ class ProduceFactoryBot(BasicBot):
         produce_list_name = building_config.factory_produce_list
         assert (len(produce_list_name) == self.factory_num,
                 f'Factory number is different from produce_list size({produce_list_name} != {self.factory_num})')
-        self.factory_list = [Factory(factory.FACTORY_MASS, name) for name in produce_list_name]
+        self.factory_list = [Factory(factory.FACTORY_HIGHTECH, name) for name in produce_list_name]
         self.factory_ad_list = building_config.factory_check_ad
 
     def _get_factories_status(self):
@@ -84,12 +84,12 @@ class ProduceFactoryBot(BasicBot):
     def _click_trade_depot(self):
         self.service_hub.screen_touch.execute(
             screen_touch.ACTION_CLICK,
-            pixel=Pixel(60, 500),
+            pixel=Pixel(300, 545),
             sleep_in=2)
 
     def _click_first_factory(self):
         first_factory = self.factory_list[0]
-        first_factory.click(sleep_in=0.2)
+        first_factory.click(sleep_in=0.3)
         for _ in range(0, first_factory.num_slot+1):
             if first_factory.look().ok: break
-            first_factory.click(sleep_in=0.2)
+            first_factory.click(sleep_in=0.3)

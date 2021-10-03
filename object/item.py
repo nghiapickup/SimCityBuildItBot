@@ -39,7 +39,7 @@ class Metal(BasicItem):
     def __init__(self):
         super().__init__("metal")
         self.n_sample = 2
-        self.set_produce_time(1*60, 2)
+        self.set_produce_time(1*60, 0)
 
 
 class Wood(BasicItem):

@@ -29,6 +29,7 @@ class TradeDepot(BasicObject):
         self.screen_touch = self.service_hub.screen_touch
         self.screen_capture = self.service_hub.screen_capture
         self.location_service = self.service_hub.object_location
+        self.location = self.location_service.parse_location('trade_depot', 'location')
 
         self.sale_window = SaleItemWindow()
         self.trade_list = trade_items
@@ -45,7 +46,7 @@ class TradeDepot(BasicObject):
         self.bnt_close_depot.find_and_click(wait_time=0, sleep_time=1.5)
 
     def start_trade(self):
-        self.logger.info(f'{self.__class__}: Start trading')
+        self.logger.info(f'{self.__class__}: Start trading {[item.name for item in self.trade_list]}')
 
         # Slide trade window and start trade
         is_end = False
@@ -66,7 +67,7 @@ class TradeDepot(BasicObject):
         trade_slot = []
 
         self.logger.info(f'{self.__class__}: Check done trade')
-        find_done_trade = self.bnt_trade_done.find_all_and_click(image=screen_image, sleep_time=0.2)
+        find_done_trade = self.bnt_trade_done.find_all_and_click(image=screen_image, try_time=0, sleep_time=0.2)
         if find_done_trade.ok:
             trade_slot.extend(find_done_trade.action_return)
 
@@ -77,13 +78,13 @@ class TradeDepot(BasicObject):
 
         for free_trade_slot in trade_slot:
             if not self.can_trade(): break
-            self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=free_trade_slot[0])
+            self.screen_touch.execute(screen_touch.ACTION_CLICK, pixel=free_trade_slot[0], sleep_in=0.5)
             self._sale_item_window()
 
         if self.can_trade():
             # sleep after wipe makes sure the window is fully changed
             self.logger.info(f'{self.__class__}:_trade_new_window: wipe right & force to sleep')
-            self.service_hub.screen_touch.execute(screen_touch.ACTION_WIPE_CENTER, sleep_in=1)
+            self.service_hub.screen_touch.execute(screen_touch.ACTION_WIPE_CENTER, sleep_in=0.5)
 
     def _sale_item_window(self):
         """
@@ -115,6 +116,6 @@ class TradeDepot(BasicObject):
                     break
 
             # close trade item window if failed to create new trade
-            if not is_done: self.sale_window.bnt_close_sale.click(sleep_in=1.5)
+            if not is_done: self.sale_window.bnt_close_sale.click(wait_open_window=True)
 
         return is_done

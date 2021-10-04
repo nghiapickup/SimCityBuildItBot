@@ -15,6 +15,12 @@ class TradeDepotLoc:
     bnt_close_sale = None
 
 
+class ManufacturerLoc:
+    first_manufacturer = None
+    bnt_next = None
+    producing_area = None # x-axis's constraint
+
+
 class FactoryLoc:
     metal = None
     wood = None
@@ -24,7 +30,6 @@ class FactoryLoc:
     chemical = None
     textile = None
     sugar = None
-    bnt_next = None
 
 
 class Location(BasicService):
@@ -34,11 +39,11 @@ class Location(BasicService):
         self.location_file_dir = resource_config.object_loc_dir
         self._load_location_file()
 
-        self.first_manufacturer_loc = None
+        self.manufacturer = ManufacturerLoc
         self.factory = FactoryLoc
         self.trade_depot = TradeDepotLoc
 
-        self._load_basic_location()
+        self._load_init_location()
 
     def parse_location(self, building, name):
         return Pixel.from_list(self._loaded_yaml[building][name])
@@ -51,9 +56,9 @@ class Location(BasicService):
                 self.logger.error(e)
                 raise IOError(f'Cannot load basic location config file:{self.location_file_dir} ')
 
-    def _load_basic_location(self):
+    def _load_init_location(self):
         try:
-            self.first_manufacturer_loc = self.parse_location('first_manufacturer', 'location')
+            self.manufacturer.first_manufacturer = self.parse_location('manufacturer', 'first_manufacturer')
             self.trade_depot.location = self.parse_location('trade_depot', 'location')
         except Exception as e:
             self.logger.error(e)
@@ -73,11 +78,10 @@ class Location(BasicService):
         self.logger.info(f'{self.__class__}: Export(overwrite={overwrite})')
         factory_dict = self._export_class_attributes(self.factory)
         trade_depot_dict = self._export_class_attributes(self.trade_depot)
+        manufacturer_dict = self._export_class_attributes(self.manufacturer)
 
         final_export = {
-            'first_manufacturer':
-                {'location': [self.first_manufacturer_loc.x,
-                              self.first_manufacturer_loc.y]},
+            'manufacturer': manufacturer_dict,
             'factory': factory_dict,
             'trade_depot': trade_depot_dict
         }

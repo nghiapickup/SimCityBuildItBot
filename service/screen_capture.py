@@ -109,7 +109,7 @@ class Capture(BasicService):
                                                 convert_to_xy_device=True,
                                                 image_shape=image.shape)
                         if converted_pixel.is_in(obj.restricted_box):
-                            # check whether new point is found !
+                            # check whether new point overlapped with previous template!
                             min_distance = 100
                             if len(all_select_locs) > 0:
                                 min_distance = min(map(lambda p: converted_pixel.distance(p[0]), all_select_locs))

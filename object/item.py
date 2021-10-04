@@ -28,14 +28,10 @@ class BasicItem(BasicObject):
     def __init__(self, name):
         super().__init__(name)
         self.produce_time = None
-        self.produce_time_off = None
         self.threshold = 0.9
 
-    def set_produce_time(self, time, time_off):
-        assert  time > time_off, \
-            f'{self.__class__}: produce_time must be > produce_time_off'
-        self.produce_time_off = time_off
-        self.produce_time = time - time_off
+    def set_produce_time(self, time):
+        self.produce_time = time
 
 
 class EmptyBox(BasicItem):
@@ -48,7 +44,7 @@ class Metal(BasicItem):
     def __init__(self):
         super().__init__("metal")
         self.n_sample = 2
-        self.set_produce_time(1*60, 2)
+        self.set_produce_time(1*60)
 
 
 
@@ -56,49 +52,49 @@ class Wood(BasicItem):
     def __init__(self):
         super().__init__("wood")
         self.n_sample = 2
-        self.set_produce_time(3*60, 2)
+        self.set_produce_time(3*60)
 
 
 class Plastic(BasicItem):
     def __init__(self):
         super().__init__("plastic")
         self.n_sample = 2
-        self.set_produce_time(9*60, 2)
+        self.set_produce_time(9*60)
 
 
 class Seed(BasicItem):
     def __init__(self):
         super().__init__("seed")
         self.n_sample = 2
-        self.set_produce_time(20*60, 2)
+        self.set_produce_time(20*60)
 
 
 class Mineral(BasicItem):
     def __init__(self):
         super().__init__("mineral")
         self.n_sample = 2
-        self.set_produce_time(30*60, 2)
+        self.set_produce_time(30*60)
 
 
 class Chemical(BasicItem):
     def __init__(self):
         super().__init__("chemical")
         self.n_sample = 2
-        self.set_produce_time(2*60*60, 2)
+        self.set_produce_time(2*60*60)
 
 
 class Textile(BasicItem):
     def __init__(self):
         super().__init__("textile")
         self.n_sample = 2
-        self.set_produce_time(3*60*60, 2)
+        self.set_produce_time(3*60*60)
 
 
 class Sugar(BasicItem):
     def __init__(self):
         super().__init__("sugar")
         self.n_sample = 2
-        self.set_produce_time(4*60*60, 2)
+        self.set_produce_time(4*60*60)
 
 
 class ItemFactory:

@@ -18,6 +18,8 @@ if __name__ == '__main__':
         assert len(sys.argv) == 2, '__main__ sys.argv input must be 1'
         new_bot = bot_map[sys.argv[1]]()
         new_bot.run()
+
+        exit(0)
     except BaseException as e :
         print(e)
         while True:

@@ -63,8 +63,10 @@ class BasicObject:
             return_all=get_all,
             show=show)
 
+        res = ObjectActionReturn(action_return=look_return, callback_return=None)
+        self.logger.info(f'{self.__class__} look for {self.name}: {res.ok}')
         if save_loc and look_return: self.location = look_return[0][0]
-        return ObjectActionReturn(action_return=look_return, callback_return=None)
+        return res
 
     def look_and_wait(self, image=None, wait_time=1, try_time=1,
                       get_all=False):
@@ -88,6 +90,7 @@ class BasicObject:
                        try_time=1, sleep_time=1,
                        loop=False, skip_loop_wait=True,
                        callback=None, **callback_args):
+        self.logger.info(f'{self.__class__}: find {self.name} and click, loop={loop}')
         find_action = self.look_and_wait(image, wait_time, try_time)
         callback_return = None
         if find_action.ok:
@@ -114,17 +117,21 @@ class BasicObject:
 
         return ObjectActionReturn(find_action.action_return, callback_return)
 
-    def click(self, sleep_in=0):
+    def click(self, sleep_in=0, wait_open_window=False):
         self.logger.info(f'{self.__class__}: Click')
         assert self.location, f'{self.__class__}: Location is None!'
         self.service_hub.screen_touch.execute(
             screen_touch.ACTION_CLICK,
             pixel=self.location, sleep_in=sleep_in
         )
+        if wait_open_window:
+            self.logger.info('Sleep 0.5s to wait_open_window')
+            time.sleep(0.5)
 
     def find_all_and_click(self, image=None, wait_time=1,
                            try_time=1, sleep_time=1,
                            callback=None, **callback_args):
+        self.logger.info(f'{self.__class__}: find ALL {self.name} and click')
         callback_return = None
         found_all = self.look_and_wait(
             image=image,
@@ -146,7 +153,7 @@ class BasicObject:
 
         return ObjectActionReturn(found_all.action_return, callback_return)
 
-    def extract_text(self, image, find_action_return, text_filter=None):
+    def extract_location_and_text(self, image, find_action_return, text_filter=None):
         res = []
         for found_result in find_action_return:
             loc, _, template = found_result
@@ -155,14 +162,11 @@ class BasicObject:
             x_range = int(image_loc[0] - template.shape[0] / 2), int(image_loc[0] + template.shape[0] / 2)
             y_range = int(image_loc[1] - template.shape[1] / 2+10), int(image_loc[1] + template.shape[1] / 2-10)
             obj_image = image[x_range[0]:x_range[1], y_range[0]:y_range[1]]
-
-            self.show(image)
             # get text from obj's box
             text = self.screen_capture.execute(screen_capture.EXTRACT_STRING, image=obj_image)
-            print(text)
             if text_filter:
                 text = text_filter(text)
-            res.append(text)
+            res.append([loc, text])
 
         return res
 
@@ -182,6 +186,5 @@ class BasicObject:
         if len(rh) > 0: h = int(rh[0])
 
         self.logger.info(f'{self.name}: {h}h:{m}m:{s}s')
-        print(f'{self.name}: {h}h:{m}m:{s}s')
         return 3600 * h + 60 * m + s
 

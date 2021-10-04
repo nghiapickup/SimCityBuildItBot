@@ -33,10 +33,8 @@ class LogConfig(BaseConfig):
 class BuildingConfig(BaseConfig):
     def __init__(self, config_yaml, project_dir):
         super().__init__(config_yaml, project_dir)
-        self.factory_count = config_yaml['factory_count']
-        self.factory_produce_list = config_yaml['factory_produce_list']
-        self.factory_check_ad = config_yaml['factory_check_ad']
-        self.factory_base_list = config_yaml['factory_base_list']
+        self.manufacturer = config_yaml['manufacturer']
+        self.factory = config_yaml['factory']
 
 
 class Config:

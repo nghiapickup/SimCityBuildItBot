@@ -14,7 +14,11 @@ logging:
   log_dir: log/
 
 building:
-  factory_count: 6
-  factory_base_list: ['metal', 'wood', 'plastic', 'seed', 'mineral', 'chemical', 'textile', 'sugar']
-  factory_produce_list: ['metal', 'wood', 'wood', 'seed', 'seed', 'plastic']
-  factory_check_ad: ['chemical', 'textile']
+  manufacturer:
+    num_factory: 7
+    num_shop: 7
+
+  factory:
+    base_products: ['metal', 'wood', 'plastic', 'seed', 'mineral', 'chemical', 'textile', 'sugar']
+    produce_list: ['metal', 'wood', 'wood', 'seed', 'seed', 'plastic', 'plastic']
+    ad_item_list: ['mineral', 'chemical', 'textile']

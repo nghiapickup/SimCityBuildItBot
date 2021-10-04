@@ -137,7 +137,7 @@ class BntBuyTradeSlot(BasicObject):
 class BntTime(BasicObject):
     def __init__(self):
         super().__init__('bnt_time')
-        self.n_sample = 1
+        self.n_sample = 3
         self.threshold = 0.65
 
 

@@ -1,13 +1,10 @@
 factory:
-  bnt_next:
-  - 946.0
-  - 1403.5
   chemical:
-  - 399.5
+  - 415.5
   - 1286.5
   metal:
-  - 759.5
-  - 636.0
+  - 768.0
+  - 634.5
   mineral:
   - 576.0
   - 1391.5
@@ -18,18 +15,24 @@ factory:
   - 765.5
   - 1316.5
   sugar:
-  - 578.0
-  - 325.0
+  - 580.5
+  - 321.0
   textile:
   - 766.5
   - 435.5
   wood:
   - 584.0
   - 528.5
-first_manufacturer:
-  location:
-  - 1.0
-  - 2.0
+manufacturer:
+  bnt_next:
+  - 946.0
+  - 1403.5
+  first_manufacturer:
+  - 960.0
+  - 610.0
+  producing_area:
+  - 810.0
+  - 1080.0
 trade_depot:
   bnt_close_depot:
   - 988.0

@@ -41,7 +41,16 @@ class ProducingSlot(BasicObject):
         return righter or lower
 
 
-class Manufacturer(BasicObject):
+class ManufacturerMeta(type):
+    def __new__(mcs, name, bases, body):
+        if name!='Manufacturer' and '_init_producing_time' not in body:
+            raise TypeError(f"_init_producing_time is not defined in {name}!")
+        if name!='Manufacturer' and 'start_produce' not in body:
+            raise TypeError(f"start_produce is not defined in {name}!")
+        return super().__new__(mcs, name, bases, body)
+
+
+class Manufacturer(BasicObject, metaclass=ManufacturerMeta):
     def __init__(self, factory_id):
         name = FACTORY_ID_TO_NAME[factory_id]
         super(Manufacturer, self).__init__(name)
@@ -68,22 +77,20 @@ class Manufacturer(BasicObject):
         self.banner_ad = BannerAd()
         self.bnt_collect = BntFactory.make(button.BNT_COLLECT)
 
-    def _init_producing_time(self, image, time_boxes):
-        return None
-
     def _update_next_release_time(self):
         # ==0 if all are empty
         slot_times = [slot.finish_time for slot in self.producing_slots if self.producing_slots != ProducingSlot.EMPTY]
         self.next_release_time = min(slot_times) if len(slot_times) else 0
 
-    def _extract_time_boxes(self, image):
+    def _extract_time_boxes(self, image,show=False):
         # find time button and match with producing list
         bnt_time = BntFactory.make(button.BNT_TIME)
         found_boxes = bnt_time.look(image=image, get_all=True)
         if found_boxes.ok:
             res = self.extract_location_and_text(image=image,
                                                  find_action_return=found_boxes.action_return,
-                                                 text_filter=self.get_time_from_text)
+                                                 text_filter=self.get_time_from_text,
+                                                 show=show)
         else:
             self.logger.info(f'{self.__class__}: Cannot find bnt_time!')
             return []
@@ -111,8 +118,8 @@ class Manufacturer(BasicObject):
         self.producing_slots.sort(reverse=True)
 
         # Find time boxes and match with proding list by distance
-        time_boxes = self._extract_time_boxes(producing_image)
-        flag = self._init_producing_time(producing_image, time_boxes=time_boxes)
+        time_boxes = self._extract_time_boxes(producing_image, show=show)
+        flag = self._init_producing_time(time_boxes=time_boxes)
         assert flag is not None, "_init_producing_time() has not defined yet!"
         self._update_next_release_time()
 
@@ -142,6 +149,7 @@ class Manufacturer(BasicObject):
         return True
 
     def collect_finish_product(self):
+        self.logger.info('Start collect_finish_product')
         current_time = time.time()
         collected = False
         for slot in self.producing_slots:
@@ -149,8 +157,7 @@ class Manufacturer(BasicObject):
             if not slot.is_empty() and remaining_time <= 2:
                 if remaining_time >= -1:
                     # wait at least 1s to collect fresh-hot items
-                    self.logger.info(f'Remaining time is small. Sleep {remaining_time+1}s')
-                    time.sleep(remaining_time+1)
+                    self.sleep(abs(remaining_time), 'Remaining time is small.')
                 collected = True
                 self.click(sleep_in=0.25)
                 slot.status = ProducingSlot.EMPTY
@@ -158,13 +165,17 @@ class Manufacturer(BasicObject):
         if collected:
             self.click(wait_open_window=True)  # click again to return manufacturer window
 
-    def start_produce(self):
-        pass
-
     def assert_current_window(self):
         find = self.look()
+        image = self.screen_capture.execute(screen_capture.GET_RECENT_IMAGE)
         if not find.ok: # temp click adapt mismatch
-            self.click(sleep_in=0.2)
+            ad_banner = BannerAd()
+            if ad_banner.look(image=image).ok:
+                ad_banner.watch()
+                self.sleep(2)
+                for slot in self.producing_slots:
+                    slot.finish_time = 0
+                self.collect_finish_product()
             self.click(wait_open_window=True)
             assert self.look().ok, f'{self.__class__}: {self.name} window is not open!'
         return self.screen_capture.execute(screen_capture.GET_RECENT_IMAGE)

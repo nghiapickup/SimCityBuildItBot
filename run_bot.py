@@ -1,4 +1,5 @@
 import sys
+import time
 
 from bot.click_opinion_bot import ClickOpinionBot
 from bot.produce_factory_bot import ProduceFactoryBot
@@ -24,3 +25,5 @@ if __name__ == '__main__':
         print(e)
         while True:
             playsound('./game-over.wav')
+            playsound('./game-over.wav')
+            time.sleep(30)

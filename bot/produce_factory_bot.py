@@ -25,8 +25,8 @@ class ProduceFactoryBot(BasicBot):
         self.factory_num = building_config.manufacturer['num_factory']
 
         produce_list_name = building_config.factory['produce_list']
-        assert (len(produce_list_name) == self.factory_num,
-                f'Factory number is different from produce_list size({produce_list_name} != {self.factory_num})')
+        assert len(produce_list_name) == self.factory_num,\
+            f'Factory number is different from produce_list size({produce_list_name} != {self.factory_num})'
         self.factory_list = [Factory(ItemFactory.from_str(name)) for name in produce_list_name]
         self.factory_ad_list = building_config.factory['ad_item_list']
 
@@ -46,8 +46,8 @@ class ProduceFactoryBot(BasicBot):
             time_left, factory_status = self._get_factories_status()
             while time_left > 0:
                 self.logger.info(f'{self.__class__}: None of factory is done. '
-                                 f'Free in next {time_left} second(s)!')
-                time.sleep(time_left)
+                                 f'Free in next {time_left+1} second(s)!')
+                time.sleep(time_left+1)
                 time_left, factory_status = self._get_factories_status()
 
             # Start production line
@@ -55,12 +55,13 @@ class ProduceFactoryBot(BasicBot):
             for fid, fac in enumerate(self.factory_list):
                 self.logger.info(f'Check factory {fid}, {fac.product_item.name} product!')
                 if factory_status[fid] > 0:
-                    if fid == 0: fac.click(wait_open_window=True) # incase first factory
+                    if fid == 0: fac.click(wait_open_window=True) # first factory
                     self.logger.info(f'{fac.product_item.name} is not ready, go to next factory!')
                     check_ad = fac.product_item.name in self.factory_ad_list
-                    if fac.click_next(check_ad=check_ad): # continue if clicked
+                    if fac.click_next(check_ad=check_ad):
                         continue
                 produce_status = fac.start_produce()
+                fac.sleep(1, 'Sleep after start_produce')
                 if produce_status: # sell what we produce
                     self.trade_depot.trade_list.append(fac.product_item)
                 fac.click_next()

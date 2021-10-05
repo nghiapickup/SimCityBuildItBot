@@ -76,7 +76,7 @@ class BasicObject:
         while not look_action.ok and try_time:
             try_time -= 1
             if wait_time > 0:
-                time.sleep(wait_time)
+                self.sleep(wait_time)
             look_action = self.look(image, get_all=get_all)
 
         if not look_action.ok:
@@ -125,8 +125,7 @@ class BasicObject:
             pixel=self.location, sleep_in=sleep_in
         )
         if wait_open_window:
-            self.logger.info('Sleep 0.5s to wait_open_window')
-            time.sleep(0.5)
+            self.sleep(0.5)
 
     def find_all_and_click(self, image=None, wait_time=1,
                            try_time=1, sleep_time=1,
@@ -153,15 +152,16 @@ class BasicObject:
 
         return ObjectActionReturn(found_all.action_return, callback_return)
 
-    def extract_location_and_text(self, image, find_action_return, text_filter=None):
+    def extract_location_and_text(self, image, find_action_return, text_filter=None, show=False):
         res = []
         for found_result in find_action_return:
             loc, _, template = found_result
             # extract obj bounding box
             image_loc = loc.get_image_point()
             x_range = int(image_loc[0] - template.shape[0] / 2), int(image_loc[0] + template.shape[0] / 2)
-            y_range = int(image_loc[1] - template.shape[1] / 2+10), int(image_loc[1] + template.shape[1] / 2-10)
+            y_range = int(image_loc[1] - template.shape[1] / 2-5), int(image_loc[1] + template.shape[1] / 2+5)
             obj_image = image[x_range[0]:x_range[1], y_range[0]:y_range[1]]
+            if show: self.show(obj_image)
             # get text from obj's box
             text = self.screen_capture.execute(screen_capture.EXTRACT_STRING, image=obj_image)
             if text_filter:
@@ -188,3 +188,6 @@ class BasicObject:
         self.logger.info(f'{self.name}: {h}h:{m}m:{s}s')
         return 3600 * h + 60 * m + s
 
+    def sleep(self, second, info=''):
+        self.logger.info(f'Sleep {second}s:{info}')
+        time.sleep(second)

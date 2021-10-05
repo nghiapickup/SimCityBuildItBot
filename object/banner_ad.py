@@ -15,6 +15,7 @@ class BannerAd(BasicObject):
         self.ad_bnt = BntFactory.make(button.BNT_AD_WATCH)
 
     def watch(self, wait_time=0, callback=None, **callback_args):
+        self.logger.info(f'{self.__class__}: Start watch ad')
         action_return = None
         cb_return = None
         if self.look().ok:
@@ -22,8 +23,7 @@ class BannerAd(BasicObject):
             click_ad_bnt = self.ad_bnt.find_and_click(image=screen_image, wait_time=wait_time)
             cb_return = None
             if click_ad_bnt.ok:
-                self.logger.info(f'{self.__class__}: Start 20s to watch Ad!')
-                time.sleep(20)  # watch ad
+                self.sleep(20, 'Watch ad')
                 close_bnt = BntFactory.make(button.BNT_AD_CLOSE)
                 # Close ad video
                 close_action = close_bnt.find_and_click(wait_time=3, try_time=3, sleep_time=2)

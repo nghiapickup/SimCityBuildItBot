@@ -13,11 +13,12 @@ class Factory(Manufacturer):
     def __init__(self, item):
         super().__init__(manufacturer.FACTORY)
         self.n_sample = 2
+        self.threshold = 0.75
 
         self.product_item = item
         self.product_item.location = self.object_location.parse_location('factory', self.product_item.name)
 
-    def _init_producing_time(self, image, time_boxes):
+    def _init_producing_time(self, time_boxes):
         current_time = time.time()
         for time_box in time_boxes:
             loc, remaining_time = time_box

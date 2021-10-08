@@ -28,7 +28,6 @@ class ProduceFactoryBot(BasicBot):
         assert len(produce_list_name) == self.factory_num,\
             f'Factory number is different from produce_list size({produce_list_name} != {self.factory_num})'
         self.factory_list = [Factory(ItemFactory.from_str(name)) for name in produce_list_name]
-        self.factory_ad_list = building_config.factory['ad_item_list']
 
     def _get_factories_status(self):
         current_time = time.time()
@@ -57,8 +56,7 @@ class ProduceFactoryBot(BasicBot):
                 if factory_status[fid] > 0:
                     if fid == 0: fac.click(wait_open_window=True) # first factory
                     self.logger.info(f'{fac.product_item.name} is not ready, go to next factory!')
-                    check_ad = fac.product_item.name in self.factory_ad_list
-                    if fac.click_next(check_ad=check_ad):
+                    if fac.click_next(check_ad=True):
                         continue
                 produce_status = fac.start_produce()
                 fac.sleep(1, 'Sleep after start_produce')

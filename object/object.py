@@ -18,7 +18,7 @@ class ObjectActionReturn:
 
 class BasicObject:
     _image_dir = Config.get_instance().resource_config.object_image_dir
-
+    _lag_scale = Config.get_instance().device_config.lag_scale
     def __init__(self, name):
         self.logger = LogHandle('objects').logger
         self.image_dir = BasicObject._image_dir + f'{name}/'
@@ -125,7 +125,7 @@ class BasicObject:
             pixel=self.location, sleep_in=sleep_in
         )
         if wait_open_window:
-            self.sleep(0.5)
+            self.sleep(1.5)
 
     def find_all_and_click(self, image=None, wait_time=1,
                            try_time=1, sleep_time=1,
@@ -189,5 +189,6 @@ class BasicObject:
         return 3600 * h + 60 * m + s
 
     def sleep(self, second, info=''):
-        self.logger.info(f'Sleep {second}s:{info}')
+        sleep_by_lag = BasicObject._lag_scale * second
+        self.logger.info(f'Sleep {sleep_by_lag}s:{info}')
         time.sleep(second)

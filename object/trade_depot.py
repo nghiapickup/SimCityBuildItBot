@@ -43,7 +43,7 @@ class TradeDepot(BasicObject):
         return len(self.trade_list) # have sth to sell
 
     def close(self):
-        self.bnt_close_depot.find_and_click(wait_time=0, sleep_time=1.5)
+        self.bnt_close_depot.find_and_click(wait_time=0, sleep_time=1)
 
     def start_trade(self):
         self.logger.info(f'{self.__class__}: Start trading {[item.name for item in self.trade_list]}')

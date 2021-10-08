@@ -14,6 +14,7 @@ class DeviceConfig(BaseConfig):
         self.adb_android_studio = config_yaml['adb']['android_studio']
         self.screen_x = config_yaml['screen_x']
         self.screen_y = config_yaml['screen_y']
+        self.lag_scale = config_yaml['lag_scale']
 
 
 class ResourceConfig(BaseConfig):

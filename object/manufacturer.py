@@ -130,7 +130,7 @@ class Manufacturer(BasicObject, metaclass=ManufacturerMeta):
         return True
 
     def click_next(self, check_ad=False, sleep_in=1):
-        self.logger.info(f'{self.__class__}: click_next')
+        self.logger.info(f'{self.__class__}: click_next, check_ad={check_ad}')
         if check_ad:
             # Check whether ad is apply, only when time left > 10 mins
             # (to make sure there is no finished product outside, if is clicked, factory window will be closed)

@@ -46,6 +46,7 @@ class Factory(Manufacturer):
         start_time = time.time()
         for slot in self.producing_slots:
             if slot.status == ProducingSlot.EMPTY:
+                self.logger.info(f'{self.__class__}: wipe {self.product_item.name} to slot')
                 self.screen_touch.execute(
                     screen_touch.ACTION_WIPE_TO_CENTER,
                     from_pixel=self.product_item.location,

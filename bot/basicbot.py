@@ -18,7 +18,7 @@ class BasicBot:
         a bot must complete it's task and release the device for other bots.
         :param name:
         """
-        self.logger = LogHandle('bot').logger
+        self.logger = LogHandle('objects').logger
         self.logger.info(f'{self.__class__}: Start bot {name}')
         self.name = name
 

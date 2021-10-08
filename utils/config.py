@@ -14,6 +14,7 @@ class DeviceConfig(BaseConfig):
         self.adb_android_studio = config_yaml['adb']['android_studio']
         self.screen_x = config_yaml['screen_x']
         self.screen_y = config_yaml['screen_y']
+        self.lag_scale = config_yaml['lag_scale']
 
 
 class ResourceConfig(BaseConfig):
@@ -33,9 +34,8 @@ class LogConfig(BaseConfig):
 class BuildingConfig(BaseConfig):
     def __init__(self, config_yaml, project_dir):
         super().__init__(config_yaml, project_dir)
-        self.factory_count = config_yaml['factory_count']
-        self.factory_produce_list = config_yaml['factory_produce_list']
-        self.factory_check_ad = config_yaml['factory_check_ad']
+        self.manufacturer = config_yaml['manufacturer']
+        self.factory = config_yaml['factory']
 
 
 class Config:

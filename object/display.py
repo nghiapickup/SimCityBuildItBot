@@ -11,10 +11,14 @@ class Pixel:
     def __repr__(self):
         return f'({self.x}, {self.y})'
 
-    def __init__(self, x, y, convert_to_xy_device=False):
-        config = Config.get_instance().device_config
-        self.screen_x = config.screen_x
-        self.screen_y = config.screen_y
+    def __init__(self, x, y, convert_to_xy_device=False, image_shape=None):
+        if image_shape is None:
+            config = Config.get_instance().device_config
+            self.screen_x = config.screen_x
+            self.screen_y = config.screen_y
+        else:
+            self.screen_x = image_shape[0]
+            self.screen_y = image_shape[1]
 
         self.x = x
         self.y = y
@@ -51,6 +55,9 @@ class Pixel:
 
     def get_cv_point(self):
         return self.y, self.screen_x - self.x
+
+    def get_image_point(self):
+        return self.screen_x - self.x, self.y
 
     def diff_range(self, other, n_step):
         return Pixel((other.x - self.x)/n_step, (other.y - self.y)/n_step)

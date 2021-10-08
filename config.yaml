@@ -1,4 +1,5 @@
 device:
+  lag_scale: 1
   adb:
     genymotion: /opt/genymotion/tools/adb
     android_studio: /home/ubuntu/Android/Sdk/platform-tools/adb
@@ -14,6 +15,10 @@ logging:
   log_dir: log/
 
 building:
-  factory_count: 7
-  factory_produce_list: ['metal', 'wood', 'wood', 'seed', 'seed', 'plastic', 'plastic']
-  factory_check_ad: ['chemical', 'textile']
+  manufacturer:
+    num_factory: 7
+    num_shop: 7
+
+  factory:
+    base_products: ['metal', 'wood', 'plastic', 'seed', 'mineral', 'chemical', 'textile', 'sugar']
+    produce_list: ['metal', 'wood', 'seed', 'seed', 'plastic', 'plastic', 'mineral']

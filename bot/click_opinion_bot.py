@@ -22,8 +22,8 @@ class ClickOpinionBot(BasicBot):
         while True:
             self.opinion.find_and_click(loop=True, try_time=0, callback=self._handle_opinion)
             self.simoleon.find_and_click(loop=True, try_time=0, sleep_time=0.5, callback=self._handle_simoleon)
-            self.ad_popup.find_and_click(loop=True, try_time=0, sleep_time=0.5, callback=self._handle_ad)
-            self.opinion.sleep(3)
+            # self.ad_popup.find_and_click(loop=True, try_time=0, sleep_time=0.5, callback=self._handle_ad)
+            self.opinion.sleep(2)
 
     def _handle_opinion(self, found_opinion):
         opinion_loc, score, template = found_opinion[0]

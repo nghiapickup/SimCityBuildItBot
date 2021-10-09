@@ -125,7 +125,7 @@ class BasicObject:
             pixel=self.location, sleep_in=sleep_in
         )
         if wait_open_window:
-            self.sleep(1.5)
+            self.sleep(1)
 
     def find_all_and_click(self, image=None, wait_time=1,
                            try_time=1, sleep_time=1,

@@ -45,8 +45,8 @@ class ProduceFactoryBot(BasicBot):
             time_left, factory_status = self._get_factories_status()
             while time_left > 0:
                 self.logger.info(f'{self.__class__}: None of factory is done. '
-                                 f'Free in next {time_left+1} second(s)!')
-                time.sleep(time_left+1)
+                                 f'Free in next {time_left+2} second(s)!')
+                time.sleep(time_left+2)
                 time_left, factory_status = self._get_factories_status()
 
             # Start production line
@@ -59,9 +59,9 @@ class ProduceFactoryBot(BasicBot):
                     if fac.click_next(check_ad=True):
                         continue
                 produce_status = fac.start_produce()
-                fac.sleep(1, 'Sleep after start_produce')
-                if produce_status: # sell what we produce
-                    self.trade_depot.trade_list.append(fac.product_item)
+                if produce_status: 
+                    fac.sleep(1.5, 'Sleep after start_produce') # sleep to make sure wipe is done!
+                    self.trade_depot.trade_list.append(fac.product_item) # sell what we produce
                 fac.click_next()
 
             if self.trade_depot.can_trade():

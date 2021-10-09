@@ -73,7 +73,7 @@ class Touch(BasicService):
         self.device.abd_sendevents(events)
 
     def _set_pressure(self):
-        events = [(EV_ABS.type, EV_ABS.ABS_MT_PRESSURE, 1)]
+        events = [(EV_ABS.type, EV_ABS.ABS_MT_PRESSURE, 2)]
         self.device.abd_sendevents(events)
 
     def _set_axis(self, x, y):

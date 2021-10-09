@@ -8,7 +8,7 @@ from service import screen_capture
 class BannerAd(BasicObject):
     def __init__(self):
         super().__init__("banner_ad")
-        self.n_sample = 1
+        self.n_sample = 2
         self.threshold = 0.9
 
         self.screen_capture = self.service_hub.screen_capture
@@ -26,7 +26,9 @@ class BannerAd(BasicObject):
                 self.sleep(20, 'Watch ad')
                 close_bnt = BntFactory.make(button.BNT_AD_CLOSE)
                 # Close ad video
-                close_action = close_bnt.find_and_click(wait_time=3, try_time=3, sleep_time=2)
+                close_action = close_bnt.find_and_click(
+                    wait_time=2, try_time=2, 
+                    sleep_time=2, loop=True)
                 if close_action.ok:
                     action_return = close_action.action_return
                     if callback is not None:  # action after close the ad video

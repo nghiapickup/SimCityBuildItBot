@@ -8,7 +8,7 @@ from service import screen_capture
 class BannerAd(BasicObject):
     def __init__(self):
         super().__init__("banner_ad")
-        self.n_sample = 1
+        self.n_sample = 2
         self.threshold = 0.9
 
         self.screen_capture = self.service_hub.screen_capture

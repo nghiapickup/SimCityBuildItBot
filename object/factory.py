@@ -50,7 +50,7 @@ class Factory(Manufacturer):
                 self.screen_touch.execute(
                     screen_touch.ACTION_WIPE_TO_CENTER,
                     from_pixel=self.product_item.location,
-                    n_step=3,
+                    n_step=5,
                     hold=0
                 )
                 slot.status = ProducingSlot.IN_PROGRESS

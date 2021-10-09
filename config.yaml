@@ -1,5 +1,6 @@
 device:
   lag_scale: 1
+
   adb:
     genymotion: /opt/genymotion/tools/adb
     android_studio: /home/ubuntu/Android/Sdk/platform-tools/adb

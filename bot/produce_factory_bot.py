@@ -59,9 +59,9 @@ class ProduceFactoryBot(BasicBot):
                     if fac.click_next(check_ad=True):
                         continue
                 produce_status = fac.start_produce()
-                fac.sleep(1, 'Sleep after start_produce')
-                if produce_status: # sell what we produce
-                    self.trade_depot.trade_list.append(fac.product_item)
+                if produce_status: 
+                    fac.sleep(1.5, 'Sleep after start_produce') # sleep to make sure wipe is done!
+                    self.trade_depot.trade_list.append(fac.product_item) # sell what we produce
                 fac.click_next()
 
             if self.trade_depot.can_trade():

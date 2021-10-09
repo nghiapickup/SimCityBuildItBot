@@ -159,7 +159,7 @@ class Manufacturer(BasicObject, metaclass=ManufacturerMeta):
                     # wait at least 1s to collect fresh-hot items
                     self.sleep(abs(remaining_time), 'Remaining time is small.')
                 collected = True
-                self.click(sleep_in=0.25)
+                self.click(sleep_in=0.5)
                 slot.status = ProducingSlot.EMPTY
 
         if collected:
@@ -168,10 +168,9 @@ class Manufacturer(BasicObject, metaclass=ManufacturerMeta):
     def assert_current_window(self):
         find = self.look()
         image = self.screen_capture.execute(screen_capture.GET_RECENT_IMAGE)
-        if not find.ok: # temp click adapt mismatch
-            ad_banner = BannerAd()
-            if ad_banner.look(image=image).ok:
-                ad_banner.watch()
+        if not find.ok:
+            if self.banner_ad.look(image=image).ok:
+                self.banner_ad.watch()
                 self.sleep(2)
                 for slot in self.producing_slots:
                     slot.finish_time = 0

@@ -35,7 +35,9 @@ class BuildingConfig(BaseConfig):
     def __init__(self, config_yaml, project_dir):
         super().__init__(config_yaml, project_dir)
         self.manufacturer = config_yaml['manufacturer']
+        self.trade_depot = config_yaml['trade_hq']
         self.factory = config_yaml['factory']
+        self.trade_hq = config_yaml['trade_hq']
 
 
 class Config:

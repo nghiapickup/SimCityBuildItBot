@@ -163,6 +163,7 @@ class Manufacturer(BasicObject, metaclass=ManufacturerMeta):
                 slot.status = ProducingSlot.EMPTY
 
         if collected:
+            self.sleep(0.5, 'Sleep after collect finish product')
             self.click(wait_open_window=True)  # click again to return manufacturer window
 
     def assert_current_window(self):

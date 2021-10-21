@@ -24,11 +24,12 @@ class SaleItemWindow(BasicObject):
 class TradeDepot(BasicObject):
     def __init__(self, trade_items):
         super().__init__('trade_depot')
-        self.n_sample = 1
+        self.n_sample = 2
 
         self.screen_touch = self.service_hub.screen_touch
         self.screen_capture = self.service_hub.screen_capture
         self.location_service = self.service_hub.object_location
+
         self.location = self.location_service.parse_location('trade_depot', 'location')
 
         self.sale_window = SaleItemWindow()

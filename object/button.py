@@ -16,6 +16,8 @@ BNT_RIGHT = 112,
 BNT_YES = 113
 BNT_BUY_TRADE_SLOT = 114
 BNT_TIME = 115
+BNT_TRADE_HQ_REFRESH = 116
+BNT_HOME = 117
 
 BNT_TYPE = {
     'bnt_trade_new': BNT_TRADE_NEW,
@@ -32,7 +34,9 @@ BNT_TYPE = {
     'bnt_right': BNT_RIGHT,
     'bnt_yes': BNT_YES,
     'bnt_buy_trade_slot': BNT_BUY_TRADE_SLOT,
-    'bnt_time': BNT_TIME
+    'bnt_time': BNT_TIME,
+    'bnt_trade_hq_refresh': BNT_TRADE_HQ_REFRESH,
+    'bnt_home': BNT_HOME
 }
 
 
@@ -141,6 +145,20 @@ class BntTime(BasicObject):
         self.threshold = 0.65
 
 
+class BntTradeHqRefresh(BasicObject):
+    def __init__(self):
+        super().__init__('bnt_trade_hq_refresh')
+        self.n_sample = 1
+        self.threshold = 0.7
+
+
+class BntHome(BasicObject):
+    def __init__(self):
+        super().__init__('bnt_home')
+        self.n_sample = 2
+        self.threshold = 0.7
+
+
 class BntFactory(BasicObject):
     bnt_map = {
         BNT_TRADE_NEW: BntTradeNew,
@@ -157,7 +175,9 @@ class BntFactory(BasicObject):
         BNT_RIGHT: BntRight,
         BNT_YES: BntYes,
         BNT_BUY_TRADE_SLOT: BntBuyTradeSlot,
-        BNT_TIME: BntTime
+        BNT_TIME: BntTime,
+        BNT_TRADE_HQ_REFRESH: BntTradeHqRefresh,
+        BNT_HOME: BntHome
     }
 
     @staticmethod

@@ -18,13 +18,16 @@ class ObjectActionReturn:
 
 class BasicObject:
     _image_dir = Config.get_instance().resource_config.object_image_dir
-    
-    def __init__(self, name):
-        self.logger = LogHandle('objects').logger
-        self.image_dir = BasicObject._image_dir + f'{name}/'
-        self.name = name
-        self.lag_scale = Config.get_instance().device_config.lag_scale
+    _lag_scale = Config.get_instance().device_config.lag_scale
 
+    def __init__(self, name, category=''):
+        self.logger = LogHandle('objects').logger
+        if category == '':
+            self.image_dir = BasicObject._image_dir + f'{name}/'
+        else:
+            self.image_dir = BasicObject._image_dir + f'{category}/{name}/'
+
+        self.name = name
         self.location = None
         self.service_hub = ServiceHub.get_instance()
         self.object_location = self.service_hub.object_location
@@ -42,7 +45,7 @@ class BasicObject:
 
     @staticmethod
     def apply_restricted_box(image, box):
-        return image[box[0].x:box[1].x,box[0].y:box[1].y]
+        return image[box[0].x:box[1].x, box[0].y:box[1].y]
 
     @staticmethod
     def show(image):
@@ -160,7 +163,7 @@ class BasicObject:
             # extract obj bounding box
             image_loc = loc.get_image_point()
             x_range = int(image_loc[0] - template.shape[0] / 2), int(image_loc[0] + template.shape[0] / 2)
-            y_range = int(image_loc[1] - template.shape[1] / 2-5), int(image_loc[1] + template.shape[1] / 2+5)
+            y_range = int(image_loc[1] - template.shape[1] / 2 - 5), int(image_loc[1] + template.shape[1] / 2 + 5)
             obj_image = image[x_range[0]:x_range[1], y_range[0]:y_range[1]]
             if show: self.show(obj_image)
             # get text from obj's box
@@ -190,6 +193,6 @@ class BasicObject:
         return 3600 * h + 60 * m + s
 
     def sleep(self, second, info=''):
-        sleep_by_lag = self.lag_scale * second
+        sleep_by_lag = BasicObject._lag_scale * second
         self.logger.info(f'Sleep {sleep_by_lag}s:{info}')
         time.sleep(second)

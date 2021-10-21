@@ -3,6 +3,7 @@ import time
 
 from bot.click_opinion_bot import ClickOpinionBot
 from bot.produce_factory_bot import ProduceFactoryBot
+from bot.search_special_item import SearchSpecialItem
 from playsound import playsound
 
 from bot.setup_bot import SetupBot
@@ -11,6 +12,7 @@ bot_map = {
     'click_opinion': ClickOpinionBot,
     'produce_factory': ProduceFactoryBot,
     'setup': SetupBot,
+    'trade_hq': SearchSpecialItem,
 }
 
 if __name__ == '__main__':

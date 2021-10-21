@@ -6,6 +6,10 @@ from service.service import BasicService
 from utils.config import Config
 
 
+class TradeHq:
+    location = None
+
+
 class TradeDepotLoc:
     location = None
     bnt_close_depot = None
@@ -38,10 +42,12 @@ class Location(BasicService):
         resource_config = Config.get_instance().resource_config
         self.location_file_dir = resource_config.object_loc_dir
         self._load_location_file()
+        self.building_config = Config.get_instance().building_config
 
         self.manufacturer = ManufacturerLoc
         self.factory = FactoryLoc
         self.trade_depot = TradeDepotLoc
+        self.trade_hq = TradeHq
 
         self._load_init_location()
 
@@ -54,15 +60,19 @@ class Location(BasicService):
                 self._loaded_yaml = yaml.safe_load(stream)
             except yaml.YAMLError as e:
                 self.logger.error(e)
-                raise IOError(f'Cannot load basic location config file:{self.location_file_dir} ')
+                raise IOError(f'Cannot load location config file:{self.location_file_dir} ')
 
     def _load_init_location(self):
+        # Load init location from config
         try:
-            self.manufacturer.first_manufacturer = self.parse_location('manufacturer', 'first_manufacturer')
-            self.trade_depot.location = self.parse_location('trade_depot', 'location')
+            self.manufacturer.first_manufacturer = self.building_config.manufacturer['first_manufacturer_location']
+            self.trade_depot.location = self.building_config.trade_depot['location']
+            self.trade_hq.location = self.building_config.trade_hq['location']
         except Exception as e:
             self.logger.error(e)
-            raise IOError(f'Cannot load the basic config trade_depot or first_manufacturer!')
+            raise IOError(f'Cannot load the basic config manufacturer.first_manufacturer '
+                          f'or trade_depot.location '
+                          f'or trade_hq.location')
 
     @staticmethod
     def _export_class_attributes(inspect_class):
@@ -79,11 +89,13 @@ class Location(BasicService):
         factory_dict = self._export_class_attributes(self.factory)
         trade_depot_dict = self._export_class_attributes(self.trade_depot)
         manufacturer_dict = self._export_class_attributes(self.manufacturer)
+        trade_hq_dict = self._export_class_attributes(self.trade_hq)
 
         final_export = {
             'manufacturer': manufacturer_dict,
             'factory': factory_dict,
-            'trade_depot': trade_depot_dict
+            'trade_depot': trade_depot_dict,
+            'trade_hq': trade_hq_dict
         }
 
         if overwrite:

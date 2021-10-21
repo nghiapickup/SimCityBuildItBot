@@ -1,9 +1,5 @@
-            
-/dev/input/event4: EV_ABS       ABS_MT_PRESSURE      00000001            
-/dev/input/event4: EV_ABS       ABS_MT_POSITION_X    0000012d            
-/dev/input/event4: EV_ABS       ABS_MT_POSITION_Y    00000220            
-/dev/input/event4: EV_SYN       SYN_MT_REPORT        00000000            
-/dev/input/event4: EV_SYN       SYN_REPORT           00000000            
-/dev/input/event4: EV_KEY       BTN_TOUCH            UP                  
-/dev/input/event4: EV_SYN       SYN_MT_REPORT        00000000            
-/dev/input/event4: EV_SYN       SYN_REPORT           00000000
+00000369 873
+0000021a 538
+
+0000037d 893
+0000021c 540

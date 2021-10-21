@@ -52,3 +52,7 @@ trade_depot:
   location:
   - 300.0
   - 545.0
+trade_hq:
+  location:
+  - 890.0
+  - 540.0

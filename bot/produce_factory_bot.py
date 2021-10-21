@@ -45,8 +45,8 @@ class ProduceFactoryBot(BasicBot):
             time_left, factory_status = self._get_factories_status()
             while time_left > 0:
                 self.logger.info(f'{self.__class__}: None of factory is done. '
-                                 f'Free in next {time_left+2} second(s)!')
-                time.sleep(time_left+2)
+                                 f'Free in next {time_left+1} second(s)!')
+                time.sleep(time_left+1)
                 time_left, factory_status = self._get_factories_status()
 
             # Start production line

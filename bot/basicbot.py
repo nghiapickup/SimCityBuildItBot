@@ -5,19 +5,6 @@ from job.hub import JobHub
 
 class BasicBot:
     def __init__(self, name):
-        """
-        A bot performs a single or combination of tasks, independent to each others,
-        and a game can have multiple bots running at the same time.
-        It is easier to have single action bot like this,
-        .i.e, click opinion bot, run factory bot, trade bot,
-        then we don't worry about the logic of combination of many task
-        (which is the first, which should perform after another, ...),
-        and try to test new bot when the others are running.
-
-        At each time, only one bot can handle the game (device and action),
-        a bot must complete it's task and release the device for other bots.
-        :param name:
-        """
         self.logger = LogHandle('objects').logger
         self.logger.info(f'{self.__class__}: Start bot {name}')
         self.name = name
